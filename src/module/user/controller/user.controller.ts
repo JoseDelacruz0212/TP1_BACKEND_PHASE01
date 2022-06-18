@@ -59,14 +59,14 @@ export class UserController {
     {
       let data;
       //esto es admin
-      if(this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted)
+      if(this.rolesBuilder.can(user.Roles).updateAny(AppResource.User).granted)
       {
          data=await this.userService.update(id, dto);
       }
       //usuario
       else
       {
-        const { roles, ...rest } = dto;
+        const { Roles, ...rest } = dto;
          data=await this.userService.update(id, rest, user);
       }
       return {message:'Editado',data}
@@ -85,14 +85,14 @@ export class UserController {
     {
       let data;
       //esto es admin
-      if(this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted)
+      if(this.rolesBuilder.can(user.Roles).updateAny(AppResource.User).granted)
       {
          data=await this.userService.updatePartial(id, dto);
       }
       //usuario
       else
       {
-        const { roles, ...rest } = dto;
+        const { Roles, ...rest } = dto;
          data=await this.userService.updatePartial(id, rest, user);
       }
       return {message:'Editado',data}
@@ -107,7 +107,7 @@ export class UserController {
      @userDecorator() user: User) {
       let data;
 
-      if (this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted) {
+      if (this.rolesBuilder.can(user.Roles).updateAny(AppResource.User).granted) {
         // esto es un admin
         data = await this.userService.delete(id);
       } else {

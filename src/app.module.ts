@@ -15,8 +15,6 @@ import {
 import { UserModule } from './module/user/user.module';
 import { AuthModule } from './module/auth/auth.module';
 import { roles } from './app.roles';
-import { KidModule } from './module/kid/kid.module';
-import { GeneralQuestionsModule } from './module/general-questions/general-questions.module';
 @Module({
   imports: [
   ConfigModule.forRoot({
@@ -33,7 +31,7 @@ import { GeneralQuestionsModule } from './module/general-questions/general-quest
       password: configService.get(DB_PASSWORD),
       database: configService.get(DB_DATABASE),
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false,
+      synchronize: false,//False:doesn't create a Tables| True:create tables and default User
       legacySpatialSupport:false,
       logging: true,
     }),
@@ -41,7 +39,7 @@ import { GeneralQuestionsModule } from './module/general-questions/general-quest
   }),
   AccessControlModule.forRoles(roles),
   UserModule, 
-  AuthModule, KidModule, GeneralQuestionsModule
+  AuthModule
   
 ],
 controllers: [AppController],

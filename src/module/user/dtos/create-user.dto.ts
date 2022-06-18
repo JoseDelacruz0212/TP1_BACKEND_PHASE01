@@ -3,63 +3,35 @@ import {  IsArray, IsBoolean, IsEmail, IsEnum, isEnum, IsNotEmpty,IsString, Vali
 import { AppRoles } from "src/app.roles";
 
 export class CreateUserDto {
-    iduser?: string;
+    IdUser?: string;
     @ApiProperty()
     @IsString()
-    @ValidateIf(o=>o.userName===null)
-    userName?: string;
+    @ValidateIf(o=>o.Name===null)
+    Name?: string;
     @ApiProperty()
-    @ValidateIf(o=>o.firstName===null)
+    @ValidateIf(o=>o.LastName===null)
     @IsString()
-    firstName?: string;
+    LastName?: string;
     @ApiProperty()
-    @ValidateIf(o=>o.firstName===null)
-    birthdate?: Date;
+    @ValidateIf(o=>o.Email===null)
+    Email?: string;
     @ApiProperty()
-    @ValidateIf(o=>o.lastName===null)
+    @ValidateIf(o=>o.Password===null)
     @IsString()
-    lastName?: string;
+    Password?: string;
     @ApiProperty()
-    @ValidateIf(o=>o.direction===null)
-    @IsString()
-    direction?: string;
-    @ApiProperty()
-    @ValidateIf(o=>o.city===null)
-    @IsString()
-    city?: string;
-    @ApiProperty()
-    @ValidateIf(o=>o.country===null)
-    @IsString()
-    country?: string;
-    @ApiProperty()
-    @ValidateIf(o=>o.postal_code===null)
-    @IsString()
-    postal_code?: string;
-    @ApiProperty()
-    @ValidateIf(o=>o.phone_number===null)
-    @IsString()
-    phone_number?: string;
-    @ApiProperty()
-    @ValidateIf(o=>o.userEmail===null)
-    @IsEmail()
-    userEmail?: string;
-    @ApiProperty()
-    @ValidateIf(o=>o.avatarUrl===null)
-    @IsEmail()
-    avatarUrl?: string;
-    @ApiProperty()
-    @ValidateIf(o=>o.passwordUser===null)
-    @IsString()
-    passwordUser?: string;
-    @ApiProperty()
-    @ValidateIf(o=>o.status===null)
+    @ValidateIf(o=>o.Status===null)
     @IsBoolean()
-    status:boolean;
+    Status:boolean;
     @ApiProperty()
-    @ValidateIf(o=>o.roles===null)
+    @ValidateIf(o=>o.IsDeleted===null)
+    @IsBoolean()
+    IsDeleted:boolean;
+    @ApiProperty()
+    @ValidateIf(o=>o.Roles===null)
     @IsArray()
     @IsEnum(AppRoles,{
         each:true
     })
-    roles: string[];
+    Roles: string[];
 }

@@ -8,55 +8,44 @@ import { Column,
     OneToMany,
     CreateDateColumn,
     UpdateDateColumn, } from 'typeorm';
-import { Kid } from './kid.entity';
 @Entity({ name: 'user' }) 
 export class User {
   @PrimaryGeneratedColumn("uuid")
-    idUser:string;
-  
+    IdUser:string;
+    // Base Columns
     @Column({ type: 'varchar', length: 255, nullable: false })
-    userName: string;
-  
+    Name: string;
     @Column({ type: 'varchar', length: 255, nullable: false })
-    firstName: string;
-    @Column({ type: 'date', nullable: false})
-    birthdate: Date;
+    LastName: string;
     @Column({ type: 'varchar', length: 255, nullable: false })
-    lastName: string;
-    @Column({ type: 'varchar', length: 255, nullable: false })
-    direction: string;
-    @Column({ type: 'varchar', length: 255, nullable: false })
-    city: string;
-    @Column({ type: 'varchar', length: 255, nullable: false })
-    country: string;
-    @Column({ type: 'varchar', length: 255, nullable: false })
-    postal_code: string;
-    @Column({ type: 'varchar', length: 255, nullable: false })
-    phone_number: string;
-    @Column({ type: 'varchar', length: 255, nullable: false })
-    avatarUrl: string;
-    @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
-    userEmail: string;
+    Email: string;
     @Column({ type: 'varchar', length: 250, nullable: false, select: false  })
-    passwordUser: string;
-    @Column({ type: 'bool', default: true })
-    status: boolean;
-    @CreateDateColumn()
-    createDate:Date;
+    Password: string;
+    //Audit Columns
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    CreatedBy: string;
     @UpdateDateColumn()
-    updateDate:Date;
+    CreatedOn:Date;
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    UpdatedBy: string;
+    @CreateDateColumn()
+    UpdatedOn:Date;
+    //Managment user columns
+    @Column({ type: 'bool', default: true })
+    Status: boolean;
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    AvatarUrl: string;
     @Column({ type: 'simple-array' })
-    roles: string[];
-    @OneToMany(() => Kid, Kid => Kid.user)
-    Kid: Kid[];
-
+    Roles: string[];
+    @Column({ type: 'bool', default: false })
+    IsDeleted: boolean;
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
-    if (!this.passwordUser) {
+    if (!this.Password) {
       return;
     }
-    this.passwordUser = await hash(this.passwordUser, 10);
+    this.Password = await hash(this.Password, 10);
 
 }
 }

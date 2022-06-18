@@ -10,23 +10,23 @@ export class AuthService {
         private readonly userService:UserService,
         private readonly jwtService:JwtService
     ){}
-    async validateUser(userEmail:string,passwordUser:string):Promise<any>{
-        const user= await this.userService.findByEmail({userEmail});
+    async validateUser(Email:string,passwordUser:string):Promise<any>{
+        const user= await this.userService.findByEmail({Email});
         //verificando si existe algun usuario con el email ingresado
         if(!user){
             return null;
         }
         //verificando si se encuentra autorizado para logearse y coincide las contraseñas
-        if(user.status==true&&  await compare(passwordUser,user.passwordUser)){
-            const { passwordUser, ...rest } = user;
+        if(user.Status==true&&  await compare(passwordUser,user.Password)){
+            const { Password, ...rest } = user;
             return rest;
         }
         return null;
     }
     login(user: User) {
        console.log(user);
-        const { idUser, ...rest } = user;
-        const payload = { sub: idUser };
+        const { IdUser, ...rest } = user;
+        const payload = { sub: IdUser };
         return{ 
         user,
           accessToken: this.jwtService.sign(payload),

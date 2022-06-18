@@ -5,8 +5,8 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { EditUserDto } from '../dtos/edit-user.dto';
 export interface UserFindOne{
-    idUser?:string;
-    userEmail?:string;
+    IdUser?:string;
+    Email?:string;
 }
 @Injectable()
 export class UserService {
@@ -25,7 +25,7 @@ export class UserService {
       }
       async gettAllAdmin(): Promise<User[]> {
         const list = await this.userRepository.find({where:{
-          roles:'admin'
+          Roles:'admin'
         }})
         if (!list.length) {
           throw new NotFoundException({ mesage: 'The list is empty' });
@@ -34,7 +34,7 @@ export class UserService {
       }
       async findById(id: string,userEntity?:User): Promise<User> {
         const user = await this.userRepository.findOne(id)
-        .then(u => (!userEntity ? u : !!u && userEntity.idUser === u.idUser ? u : null));
+        .then(u => (!userEntity ? u : !!u && userEntity.IdUser === u.IdUser ? u : null));
         if (!user) {
           throw new NotFoundException({ mesage: `User doesn't exist or not authorized to access` });
         }
@@ -42,38 +42,44 @@ export class UserService {
       }
       async findByNombre(name: string): Promise<User> {
         const user = await this.userRepository.findOne({
-          userName: name,
+          Name: name,
         });
         return user;
       }
       async create(dto: CreateUserDto): Promise<any> {
         const newUser = await this.userRepository.create(dto);
         await this.userRepository.save(newUser);
-        return { message: `User ${newUser.userName} created` };
+        return { message: `User ${newUser.Email} created` };
       }
     
       async update(id: string, dto: EditUserDto,userEntity?:User): Promise<any> {
         const user = await this.findById(id,userEntity);
         const editedUser = Object.assign(user, dto);
         return await this.userRepository.save(user);
-        return { message: `User ${user.userName} Updated` };
+        return { message: `User ${user.Email} Updated` };
       }
       async updatePartial(id: string, dto: EditUserDto,userEntity?:User): Promise<any> {
         const user = await this.findById(id,userEntity);
         const updatedUser={...user}
-        updatedUser.status=dto.status;
+        updatedUser.Status=dto.Status;
+        return await this.userRepository.save(updatedUser);
+      }
+      async deletePartial(id: string, dto: EditUserDto,userEntity?:User): Promise<any> {
+        const user = await this.findById(id,userEntity);
+        const updatedUser={...user}
+        updatedUser.IsDeleted=dto.IsDeleted;
         return await this.userRepository.save(updatedUser);
       }
       async delete(id: string,userEntity?:User): Promise<any> {
         const user = await this.findById(id,userEntity);
         await this.userRepository.remove(user);
-        return { message: `User ${user.userName} deleted` };
+        return { message: `User ${user.Email} deleted` };
       }
       async findByEmail(data:UserFindOne){
           return await this.userRepository
           .createQueryBuilder('user')
           .where(data)
-          .addSelect('user.passwordUser')
+          .addSelect('user.Password')
           .getOne()
       }
       
