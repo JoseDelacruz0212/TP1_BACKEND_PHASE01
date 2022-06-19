@@ -11,41 +11,41 @@ import { Column,
 @Entity({ name: 'user' }) 
 export class User {
   @PrimaryGeneratedColumn("uuid")
-    IdUser:string;
+    idUser:string;
     // Base Columns
     @Column({ type: 'varchar', length: 255, nullable: false })
-    Name: string;
+    name: string;
     @Column({ type: 'varchar', length: 255, nullable: false })
-    LastName: string;
+    lastName: string;
     @Column({ type: 'varchar', length: 255, nullable: false })
-    Email: string;
+    email: string;
     @Column({ type: 'varchar', length: 250, nullable: false, select: false  })
-    Password: string;
+    password: string;
     //Audit Columns
     @Column({ type: 'varchar', length: 255, nullable: true })
-    CreatedBy: string;
+    createdBy: string;
     @UpdateDateColumn()
-    CreatedOn:Date;
+    createdOn:Date;
     @Column({ type: 'varchar', length: 255, nullable: true })
-    UpdatedBy: string;
+    updatedBy: string;
     @CreateDateColumn()
-    UpdatedOn:Date;
+    updatedOn:Date;
     //Managment user columns
     @Column({ type: 'bool', default: true })
-    Status: boolean;
+    status: boolean;
     @Column({ type: 'varchar', length: 255, nullable: true })
-    AvatarUrl: string;
+    avatarUrl: string;
     @Column({ type: 'simple-array' })
-    Roles: string[];
+    roles: string[];
     @Column({ type: 'bool', default: false })
-    IsDeleted: boolean;
+    isDeleted: boolean;
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
-    if (!this.Password) {
+    if (!this.password) {
       return;
     }
-    this.Password = await hash(this.Password, 10);
+    this.password = await hash(this.password, 10);
 
 }
 }

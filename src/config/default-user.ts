@@ -8,20 +8,20 @@ const setDefaultUser = async (config: ConfigService) => {
 
   const defaultUser = await userRepository
     .createQueryBuilder()
-    .where('Email = :Email', {
-      Email: config.get<string>('DEFAULT_USER_EMAIL'),
+    .where('email = :email', {
+      email: config.get<string>('DEFAULT_USER_EMAIL'),
     })
     .getOne();
 
   if (!defaultUser) {
     const adminUser = userRepository.create({
-      Name: config.get<string>(DEFAULT_USER_NAME),
-      LastName: config.get<string>(DEFAULT_USER_LASTNAME),
-      Email: config.get<string>(DEFAULT_USER_EMAIL),
-      CreatedBy: config.get<string>(DEFAULT_USER_USERNAME),
-      UpdatedBy:config.get<string>(DEFAULT_USER_USERNAME),
-      Password: config.get<string>(DEFAULT_USER_PASSWORD),
-      Roles: ['admin'],
+      name: config.get<string>(DEFAULT_USER_NAME),
+      lastName: config.get<string>(DEFAULT_USER_LASTNAME),
+      email: config.get<string>(DEFAULT_USER_EMAIL),
+      createdBy: config.get<string>(DEFAULT_USER_USERNAME),
+      updatedBy:config.get<string>(DEFAULT_USER_USERNAME),
+      password: config.get<string>(DEFAULT_USER_PASSWORD),
+      roles: ['admin'],
     });
 
     return await userRepository.save(adminUser);

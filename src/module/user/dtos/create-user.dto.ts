@@ -3,35 +3,35 @@ import {  IsArray, IsBoolean, IsEmail, IsEnum, isEnum, IsNotEmpty,IsString, Vali
 import { AppRoles } from "src/app.roles";
 
 export class CreateUserDto {
-    IdUser?: string;
+    idUser?: string;
     @ApiProperty()
     @IsString()
-    @ValidateIf(o=>o.Name===null)
-    Name?: string;
+    @ValidateIf(o=>o.name===null)
+    name?: string;
     @ApiProperty()
-    @ValidateIf(o=>o.LastName===null)
+    @ValidateIf(o=>o.lastName===null)
     @IsString()
-    LastName?: string;
+    lastName?: string;
     @ApiProperty()
-    @ValidateIf(o=>o.Email===null)
-    Email?: string;
+    @ValidateIf(o=>o.email===null)
+    email?: string;
     @ApiProperty()
-    @ValidateIf(o=>o.Password===null)
+    @ValidateIf(o=>o.password===null)
     @IsString()
-    Password?: string;
+    password?: string;
     @ApiProperty()
-    @ValidateIf(o=>o.Status===null)
+    @ValidateIf(o=>o.status===null)
     @IsBoolean()
-    Status:boolean;
+    status:boolean;
     @ApiProperty()
-    @ValidateIf(o=>o.IsDeleted===null)
+    @ValidateIf(o=>o.isDeleted===null)
     @IsBoolean()
-    IsDeleted:boolean;
+    isDeleted:boolean;
     @ApiProperty()
-    @ValidateIf(o=>o.Roles===null)
+    @ValidateIf(o=>o.roles===null)
     @IsArray()
     @IsEnum(AppRoles,{
         each:true
     })
-    Roles: string[];
+    roles: string[];
 }

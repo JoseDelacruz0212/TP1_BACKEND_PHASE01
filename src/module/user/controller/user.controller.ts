@@ -43,6 +43,7 @@ export class UserController {
 
     @Post()
     async create(@Body() dto: CreateUserDto) {
+      
       return await this.userService.create(dto);
     }
     @Auth(
@@ -59,17 +60,17 @@ export class UserController {
     {
       let data;
       //esto es admin
-      if(this.rolesBuilder.can(user.Roles).updateAny(AppResource.User).granted)
+      if(this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted)
       {
          data=await this.userService.update(id, dto);
       }
       //usuario
       else
       {
-        const { Roles, ...rest } = dto;
+        const { roles, ...rest } = dto;
          data=await this.userService.update(id, rest, user);
       }
-      return {message:'Editado',data}
+      return {message:'Edited',data}
     }
     @Auth(
       {
@@ -85,17 +86,17 @@ export class UserController {
     {
       let data;
       //esto es admin
-      if(this.rolesBuilder.can(user.Roles).updateAny(AppResource.User).granted)
+      if(this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted)
       {
          data=await this.userService.updatePartial(id, dto);
       }
       //usuario
       else
       {
-        const { Roles, ...rest } = dto;
+        const { roles, ...rest } = dto;
          data=await this.userService.updatePartial(id, rest, user);
       }
-      return {message:'Editado',data}
+      return {message:'Edited',data}
     }
     @Auth({
         possession:'own',
@@ -107,7 +108,7 @@ export class UserController {
      @userDecorator() user: User) {
       let data;
 
-      if (this.rolesBuilder.can(user.Roles).updateAny(AppResource.User).granted) {
+      if (this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted) {
         // esto es un admin
         data = await this.userService.delete(id);
       } else {
