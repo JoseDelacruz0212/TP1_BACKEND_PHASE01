@@ -7,13 +7,14 @@ import { UpdateCourseDto } from '../dto/update-course.dto';
 
 @Injectable()
 export class CourseService {
-
-  constructor(@InjectRepository(Course) private repository: Repository<Course>) {}
+  constructor(
+    @InjectRepository(Course) private repository: Repository<Course>,
+  ) {}
 
   async create(createCourseDto: CreateCourseDto) {
     const newCourse = this.repository.create(createCourseDto);
     await this.repository.save(newCourse);
-    return { message: 'Course created' }
+    return { message: 'Course created' };
   }
 
   async getAll() {
@@ -25,7 +26,7 @@ export class CourseService {
     const course = await this.repository.findOne(id);
     if (!course) {
       throw new NotFoundException({
-        message: `Course with id=${id} does not exist`
+        message: `Course with id=${id} does not exist`,
       });
     }
 
@@ -41,9 +42,11 @@ export class CourseService {
   async remove(id: string) {
     const result = await this.repository.delete({ id });
     if (result.affected === 0) {
-      throw new NotFoundException({ message: 'Course to delete does not exist' });
+      throw new NotFoundException({
+        message: 'Course to delete does not exist',
+      });
     }
 
-    return { message: 'Course deleted' }
+    return { message: 'Course deleted' };
   }
 }

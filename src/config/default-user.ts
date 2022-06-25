@@ -1,6 +1,12 @@
 import { getRepository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import {  DEFAULT_USER_EMAIL, DEFAULT_USER_NAME, DEFAULT_USER_PASSWORD, DEFAULT_USER_LASTNAME,DEFAULT_USER_USERNAME} from '../config/constants';
+import {
+  DEFAULT_USER_EMAIL,
+  DEFAULT_USER_NAME,
+  DEFAULT_USER_PASSWORD,
+  DEFAULT_USER_LASTNAME,
+  DEFAULT_USER_USERNAME,
+} from '../config/constants';
 import { User } from 'src/entity/user.entity';
 
 const setDefaultUser = async (config: ConfigService) => {
@@ -19,7 +25,7 @@ const setDefaultUser = async (config: ConfigService) => {
       lastName: config.get<string>(DEFAULT_USER_LASTNAME),
       email: config.get<string>(DEFAULT_USER_EMAIL),
       createdBy: config.get<string>(DEFAULT_USER_USERNAME),
-      updatedBy:config.get<string>(DEFAULT_USER_USERNAME),
+      updatedBy: config.get<string>(DEFAULT_USER_USERNAME),
       password: config.get<string>(DEFAULT_USER_PASSWORD),
       roles: ['admin'],
     });
@@ -28,4 +34,4 @@ const setDefaultUser = async (config: ConfigService) => {
   }
 };
 
-export default setDefaultUser; 
+export default setDefaultUser;

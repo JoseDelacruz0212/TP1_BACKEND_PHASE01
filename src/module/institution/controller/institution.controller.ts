@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
 import { InstitutionService } from '../service/institution.service';
 import { CreateInstitutionDto } from '../dto/create-institution.dto';
 import { UpdateInstitutionDto } from '../dto/update-institution.dto';
@@ -23,7 +32,10 @@ export class InstitutionController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateInstitutionDto: UpdateInstitutionDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateInstitutionDto: UpdateInstitutionDto,
+  ) {
     return this.institutionService.update(id, updateInstitutionDto);
   }
 

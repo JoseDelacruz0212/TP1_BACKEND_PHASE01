@@ -7,13 +7,14 @@ import { UpdateInstitutionDto } from '../dto/update-institution.dto';
 
 @Injectable()
 export class InstitutionService {
-
-  constructor(@InjectRepository(Institution) private respository: Repository<Institution>) {}
+  constructor(
+    @InjectRepository(Institution) private respository: Repository<Institution>,
+  ) {}
 
   async create(createInstitutionDto: CreateInstitutionDto) {
-   const newInstitution = this.respository.create(createInstitutionDto);
-   await this.respository.save(newInstitution);
-   return { message: 'Institution created' }
+    const newInstitution = this.respository.create(createInstitutionDto);
+    await this.respository.save(newInstitution);
+    return { message: 'Institution created' };
   }
 
   async getAll() {
@@ -25,7 +26,7 @@ export class InstitutionService {
     const institution = await this.respository.findOne(id);
     if (!institution) {
       throw new NotFoundException({
-        message: `Institution with id=${id} does not exist`
+        message: `Institution with id=${id} does not exist`,
       });
     }
 
@@ -35,15 +36,17 @@ export class InstitutionService {
   async update(id: string, updateInstitutionDto: UpdateInstitutionDto) {
     await this.findById(id);
     await this.respository.update(id, updateInstitutionDto);
-    return { message: 'Institution updated' }
+    return { message: 'Institution updated' };
   }
 
   async remove(id: string) {
     const result = await this.respository.delete({ id });
     if (result.affected === 0) {
-      throw new NotFoundException({ message: 'Institution to delete does not exist' });
+      throw new NotFoundException({
+        message: 'Institution to delete does not exist',
+      });
     }
 
-    return { message: 'Institution deleted' }
+    return { message: 'Institution deleted' };
   }
 }

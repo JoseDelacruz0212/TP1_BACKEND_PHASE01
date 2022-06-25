@@ -1,30 +1,37 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Course } from "./course.entity";
-import { User } from "./user.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Course } from './course.entity';
+import { User } from './user.entity';
 
 @Entity({ name: 'users_courses' })
 export class UserCourse {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-    @Column({ nullable: false })
-    createdBy: string;
+  @Column({ nullable: false })
+  createdBy: string;
 
-    @Column({ nullable: false })
-    updatedBy: string;
+  @Column({ nullable: false })
+  updatedBy: string;
 
-    @Column({ default: false })
-    isDeleted: boolean;
+  @Column({ default: false })
+  isDeleted: boolean;
 
-    @ManyToOne(() => User, (user) => user.courses)
-    user!: User;
+  @ManyToOne(() => User, (user) => user.courses)
+  user!: User;
 
-    @ManyToOne(() => Course, (course) => course.users)
-    course!: Course;
+  @ManyToOne(() => Course, (course) => course.users)
+  course!: Course;
 }
