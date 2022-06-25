@@ -1,5 +1,4 @@
 import { hash } from 'bcrypt';
-import { v4 as uuid } from 'uuid';
 import { Column,
     BeforeInsert,
     Entity,
@@ -8,7 +7,9 @@ import { Column,
     OneToMany,
     CreateDateColumn,
     UpdateDateColumn, } from 'typeorm';
-@Entity({ name: 'user' }) 
+import { Institution } from './institution.entity';
+import { UserCourse } from './user-course.entity';
+@Entity({ name: 'users' }) 
 export class User {
   @PrimaryGeneratedColumn("uuid")
     idUser:string;
@@ -39,6 +40,13 @@ export class User {
     roles: string[];
     @Column({ type: 'bool', default: false })
     isDeleted: boolean;
+
+    @OneToMany(() => Institution, (institution) => institution.user)
+    institutions: Institution[];
+
+    @OneToMany(() => UserCourse, course => course.user)
+    courses: UserCourse[];
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {

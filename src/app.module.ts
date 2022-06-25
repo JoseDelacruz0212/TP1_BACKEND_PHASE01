@@ -15,6 +15,8 @@ import {
 import { UserModule } from './module/user/user.module';
 import { AuthModule } from './module/auth/auth.module';
 import { roles } from './app.roles';
+import { CourseModule } from './module/course/course.module';
+import { InstitutionModule } from './module/institution/institution.module';
 @Module({
   imports: [
   ConfigModule.forRoot({
@@ -31,7 +33,7 @@ import { roles } from './app.roles';
       password: configService.get(DB_PASSWORD),
       database: configService.get(DB_DATABASE),
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false,//False:doesn't create a Tables| True:create tables and default User
+      synchronize: true,//False:doesn't create a Tables| True:create tables and default User
       legacySpatialSupport:false,
       logging: true,
     }),
@@ -39,7 +41,7 @@ import { roles } from './app.roles';
   }),
   AccessControlModule.forRoles(roles),
   UserModule, 
-  AuthModule
+  AuthModule, CourseModule, InstitutionModule
   
 ],
 controllers: [AppController],
