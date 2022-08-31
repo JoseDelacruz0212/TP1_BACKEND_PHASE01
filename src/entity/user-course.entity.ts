@@ -15,10 +15,10 @@ export class UserCourse {
   id: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdOn: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedOn: Date;
 
   @Column({ nullable: false })
   createdBy: string;

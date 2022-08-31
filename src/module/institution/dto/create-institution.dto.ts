@@ -14,7 +14,4 @@ export class CreateInstitutionDto {
   @IsNotEmpty()
   code: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  userId: string;
 }

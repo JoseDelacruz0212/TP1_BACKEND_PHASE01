@@ -12,3 +12,7 @@ export const DEFAULT_USER_LASTNAME = 'DEFAULT_USER_NAME';
 export const DEFAULT_USER_EMAIL = 'DEFAULT_USER_EMAIL';
 export const DEFAULT_USER_USERNAME = 'DEFAULT_USER_NAME';
 export const DEFAULT_USER_PASSWORD = 'DEFAULT_USER_PASSWORD';
+//Roles
+export const ADMIN_ROLE='admin';
+export const INSTITUTION_ROLE='institution';
+export const TEACHER_ROLE='teacher';

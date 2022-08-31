@@ -9,6 +9,7 @@ import {
   Body,
   UseGuards,
   Patch,
+ Request
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { InjectRolesBuilder, RolesBuilder } from 'nest-access-control';
@@ -28,8 +29,12 @@ export class UserController {
     @InjectRolesBuilder()
     private readonly rolesBuilder: RolesBuilder,
   ) {}
-
+  @UseGuards(JwtAuthGuard)
   @Get()
+  async getProfile(@Request() req) {
+    return req.user;
+  }
+  @Get('all')
   async gettAll() {
     return this.userService.getAll();
   }
@@ -41,11 +46,32 @@ export class UserController {
   async getOne(@Param('id', ParseUUIDPipe) id: string) {
     return await this.userService.findById(id);
   }
-
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Post()
-  async create(@Body() dto: CreateUserDto) {
-    return await this.userService.create(dto);
+  async create(@Body() dto: CreateUserDto,@userDecorator() user: User) {
+    return await this.userService.create(dto,user);
   }
+  @Auth({
+    possession: 'own',
+    action: 'update',
+    resource: AppResource.User,
+  })
+  @Put('AssignInstitution/:id/:institutionId')
+  async assingInsitution(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('institutionId', ParseUUIDPipe) institutionId: string,
+    @Body() dto: CreateUserDto,
+    @userDecorator() user: User,
+  ) {
+    let data;
+    //esto es admin
+    if (this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted) {
+      data = await this.userService.assignInstitution(id, institutionId);
+    }
+  }
+
+
   @Auth({
     possession: 'own',
     action: 'update',

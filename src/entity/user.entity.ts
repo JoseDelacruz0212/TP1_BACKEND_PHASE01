@@ -8,9 +8,12 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Institution } from './institution.entity';
 import { UserCourse } from './user-course.entity';
+import { UserRoles } from './user-roles.entity';
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -43,11 +46,13 @@ export class User {
   @Column({ type: 'bool', default: false })
   isDeleted: boolean;
 
-  @OneToMany(() => Institution, (institution) => institution.user)
-  institutions: Institution[];
-
+  @ManyToOne(() => Institution, (institution) => institution.user, { eager: true })
+  @JoinColumn([{ name: "institutionId", referencedColumnName: "id" }])
+  institution: Institution;
   @OneToMany(() => UserCourse, (course) => course.user)
   courses: UserCourse[];
+  @OneToMany(() => UserRoles, (rolesActive) => rolesActive.user)
+  rolesActive: UserRoles[];
 
   @BeforeInsert()
   @BeforeUpdate()

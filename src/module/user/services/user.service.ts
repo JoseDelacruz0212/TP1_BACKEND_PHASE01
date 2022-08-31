@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Institution } from 'src/entity/institution.entity';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
@@ -13,6 +14,8 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Institution)
+    private institutionRepository: Repository<Institution>
   ) {}
 
   async getAll(): Promise<User[]> {
@@ -52,18 +55,33 @@ export class UserService {
     });
     return user;
   }
-  async create(dto: CreateUserDto): Promise<any> {
+  async create(dto: CreateUserDto,user:User): Promise<any> {
     var email = dto.email;
     var isEmailExists = await this.findByEmail({ email });
     if (!isEmailExists) {
       const newUser = await this.userRepository.create(dto);
+      newUser.createdBy=user.email;
+      newUser.updatedBy=user.email;
       await this.userRepository.save(newUser);
       return { message: `User ${newUser.email} created` };
     } else {
       return { message: `User ${dto.email} already Exists` };
     }
   }
-
+  async assignInstitution(id: string, institutionId:string, userEntity?: User): Promise<any> {
+    const user = await this.findById(id, userEntity);
+    const institution=await this.institutionRepository.findOne(institutionId);
+    if(institution){
+      user.institution=institution;
+    }
+    else{
+      throw new NotFoundException({
+        message: `Institution with id=${id} does not exist`,
+      });
+    }
+    return await this.userRepository.save(user);
+  }
+  
   async update(id: string, dto: EditUserDto, userEntity?: User): Promise<any> {
     const user = await this.findById(id, userEntity);
     const editedUser = Object.assign(user, dto);

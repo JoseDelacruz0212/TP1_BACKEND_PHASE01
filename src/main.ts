@@ -13,7 +13,6 @@ async function bootstrap() {
     .addBearerAuth()
     .setDescription('Pre-liminar version of TP project')
     .setVersion('0.1')
-    .addTag('Development')
     .build();
   app.useGlobalPipes(new ValidationPipe());
   const configService = app.get(ConfigService);

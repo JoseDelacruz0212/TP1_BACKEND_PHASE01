@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Course } from './course.entity';
 import { User } from './user.entity';
 
@@ -16,9 +16,9 @@ export class Institution {
   @Column({ unique: true, nullable: false })
   code: string;
 
-  @ManyToOne(() => User, (user) => user.institutions)
-  user: User;
+  @OneToMany(() => User, (user) => user.institution)
+  user: User[];
 
-  @ManyToOne(() => Course, (course) => course.institution)
+  @OneToMany(() => Course, (course) => course.institution)
   courses: Course[];
 }

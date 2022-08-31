@@ -10,7 +10,8 @@ import {
 } from 'typeorm';
 import { Institution } from './institution.entity';
 import { UserCourse } from './user-course.entity';
-
+import { Objective } from './objective.entity';
+import { Evaluation } from './evaluation.entity';
 @Entity({ name: 'courses' })
 export class Course {
   @PrimaryGeneratedColumn('uuid')
@@ -22,20 +23,17 @@ export class Course {
   @Column({ nullable: false })
   description: string;
 
-  @Column({ nullable: false })
-  objectives: string;
-
-  @Column({ nullable: false })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   createdBy: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'varchar', length: 255, nullable: true})
   updatedBy: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdOn: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedOn: Date;
 
   @Column({ default: false })
   isDeleted: boolean;
@@ -45,4 +43,11 @@ export class Course {
 
   @OneToMany(() => UserCourse, (user) => user.course)
   users!: UserCourse[];
+
+  @OneToMany(() => Objective , (objectives) => objectives.courses)
+  objectives: Objective[];
+
+  @OneToMany(() => Evaluation, (evaluations) => evaluations.courses)
+  evaluations!: Evaluation[];
+
 }

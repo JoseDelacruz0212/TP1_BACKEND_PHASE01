@@ -18,6 +18,12 @@ import { roles } from './app.roles';
 import { CourseModule } from './module/course/course.module';
 import { InstitutionModule } from './module/institution/institution.module';
 import { UserCourseModule } from './module/user-course/user-course.module';
+import { ObjectiveModule } from './module/objective/objective.module';
+import { EvaluationModule } from './module/evaluation/evaluation.module';
+import { QuestionModule } from './module/question/question.module';
+import { RoleModule } from './module/role/role.module';
+import { UserRoleModule } from './module/user-role/user-role.module';
+import { OptionModule } from './module/option/option.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,6 +42,7 @@ import { UserCourseModule } from './module/user-course/user-course.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true, //False:doesn't create a Tables| True:create tables and default User
         legacySpatialSupport: false,
+        autoLoadEntities:true,
         logging: true,
       }),
       inject: [ConfigService],
@@ -46,6 +53,12 @@ import { UserCourseModule } from './module/user-course/user-course.module';
     CourseModule,
     InstitutionModule,
     UserCourseModule,
+    ObjectiveModule,
+    EvaluationModule,
+    QuestionModule,
+    RoleModule,
+    UserRoleModule,
+    OptionModule
   ],
   controllers: [AppController],
   providers: [AppService],
