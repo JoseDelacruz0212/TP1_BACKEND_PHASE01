@@ -22,5 +22,5 @@ export class CreateQuestionDto {
   @IsNotEmpty()
   isSensitive: Boolean;
   @ApiProperty()
-  evaluationId: String;
+  evaluationId: string;
 }
