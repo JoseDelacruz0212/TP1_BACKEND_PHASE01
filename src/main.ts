@@ -15,6 +15,7 @@ async function bootstrap() {
     .setVersion('0.1')
     .build();
   app.useGlobalPipes(new ValidationPipe());
+  app.enableCors();
   const configService = app.get(ConfigService);
   setDefaultUser(configService);
   const port = +configService.get<number>(SERVER_PORT) || 3000;

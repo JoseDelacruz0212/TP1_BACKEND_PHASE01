@@ -24,7 +24,6 @@ export class AuthService {
     return null;
   }
   login(user: User) {
-    console.log(user);
     const { idUser, ...rest } = user;
     const payload = { sub: idUser };
     return {
