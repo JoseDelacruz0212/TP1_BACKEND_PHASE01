@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -39,6 +40,7 @@ export class Course {
   isDeleted: boolean;
 
   @ManyToOne(() => Institution, (institution) => institution.courses)
+  @JoinColumn([{ name: "institutionId", referencedColumnName: "id" }])
   institution: Institution;
 
   @OneToMany(() => UserCourse, (user) => user.course)

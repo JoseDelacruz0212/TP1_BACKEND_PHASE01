@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Course } from './course.entity';
 import { User } from './user.entity';
 
@@ -13,6 +13,18 @@ export class Institution {
   @Column({ nullable: false })
   direction: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  createdBy: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true})
+  updatedBy: string;
+
+  @CreateDateColumn()
+  createdOn: Date;
+
+  @UpdateDateColumn()
+  updatedOn: Date;
+  
   @Column({ unique: true, nullable: false })
   code: string;
 

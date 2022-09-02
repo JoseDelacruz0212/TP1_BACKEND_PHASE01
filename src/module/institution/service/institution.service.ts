@@ -19,6 +19,9 @@ export class InstitutionService {
   async create(createInstitutionDto: CreateInstitutionDto, user: User) {
     if (user.roles.includes(ADMIN_ROLE)) {
       const newInstitution = this.respository.create(createInstitutionDto);
+      newInstitution.createdBy=user.email;
+      newInstitution.updatedBy=user.email;
+      newInstitution.updatedOn=new Date();
       await this.respository.save(newInstitution);
       return { newInstitution };
     } else {
@@ -45,6 +48,8 @@ export class InstitutionService {
       institution.code=updateInstitutionDto.code;
       institution.direction=updateInstitutionDto.direction;
       institution.name=updateInstitutionDto.name;
+      institution.updatedBy=user.email;
+      institution.updatedOn=new Date();
       await this.respository.update(id, institution);
       return { message: 'Institution updated' };
     }
