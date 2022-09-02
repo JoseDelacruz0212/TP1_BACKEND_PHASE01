@@ -39,7 +39,7 @@ export class Course {
   @Column({ default: false })
   isDeleted: boolean;
 
-  @ManyToOne(() => Institution, (institution) => institution.courses)
+  @ManyToOne(() => Institution, (institution) => institution.courses, { eager: true })
   @JoinColumn([{ name: "institutionId", referencedColumnName: "id" }])
   institution: Institution;
 
