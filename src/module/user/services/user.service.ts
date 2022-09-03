@@ -64,7 +64,7 @@ export class UserService {
   async create(dto: CreateUserDto, user: User): Promise<any> {
     var email = dto.email;
     var isEmailExists = await this.findByEmail({ email });
-    if (typeof isEmailExists === undefined) {
+    if ( isEmailExists == undefined) {
       if (user.roles.includes(ADMIN_ROLE)) {
         if (dto.roles.includes(ADMIN_ROLE)) {
           const newUser = await this.userRepository.create(dto);
@@ -80,7 +80,7 @@ export class UserService {
               id: dto.insitutionId
             }
           });
-          if (typeof getInstitution !== undefined) {
+          if (getInstitution != undefined) {
             const newUser = await this.userRepository.create(dto);
             newUser.institution = getInstitution;
             newUser.createdBy = user.email;
@@ -88,7 +88,8 @@ export class UserService {
             await this.userRepository.save(newUser);
             return { message: `User ${newUser.email} created` };
           } else {
-            throw NotFoundException;
+            throw new NotFoundException({
+            });
           }
         }
       }
