@@ -1,14 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Institution } from 'src/entity/institution.entity';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { EditUserDto } from '../dtos/edit-user.dto';
+import {
+  ADMIN_ROLE,
+  INSTITUTION_ROLE,
+  TEACHER_ROLE
+} from '../../../config/constants';
 export interface UserFindOne {
   idUser?: string;
   email?: string;
 }
+
 @Injectable()
 export class UserService {
   constructor(
@@ -16,7 +22,7 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(Institution)
     private institutionRepository: Repository<Institution>
-  ) {}
+  ) { }
 
   async getAll(): Promise<User[]> {
     const list = await this.userRepository.find();
@@ -55,33 +61,71 @@ export class UserService {
     });
     return user;
   }
-  async create(dto: CreateUserDto,user:User): Promise<any> {
+  async create(dto: CreateUserDto, user: User): Promise<any> {
     var email = dto.email;
     var isEmailExists = await this.findByEmail({ email });
-    if (!isEmailExists) {
-      const newUser = await this.userRepository.create(dto);
-      newUser.createdBy=user.email;
-      newUser.updatedBy=user.email;
-      await this.userRepository.save(newUser);
-      return { message: `User ${newUser.email} created` };
-    } else {
-      return { message: `User ${dto.email} already Exists` };
+    if (user.roles.includes(ADMIN_ROLE)) {
+      if (dto.roles.includes(ADMIN_ROLE)) {
+        if (!isEmailExists) {
+          const newUser = await this.userRepository.create(dto);
+          newUser.status = true;
+          newUser.createdBy = user.email;
+          newUser.updatedBy = user.email;
+          await this.userRepository.save(newUser);
+          return { message: `User ${newUser.email} created` };
+        } else {
+          return { message: `User ${dto.email} already Exists` };
+        }
+      }
+      else {
+        if (!isEmailExists) {
+          const getInstitution = await this.institutionRepository.findOne(dto.insitutionId);
+          if (getInstitution) {
+            const newUser = await this.userRepository.create(dto);
+            newUser.institution = getInstitution;
+            newUser.createdBy = user.email;
+            newUser.updatedBy = user.email;
+            await this.userRepository.save(newUser);
+            return { message: `User ${newUser.email} created` };
+          } else {
+            return { message: `User ${dto.email} already Exists` };
+          }
+        }
+      }
     }
+    else {
+      if (user.roles.includes(INSTITUTION_ROLE)) {
+        if (!isEmailExists) {
+          const newUser = await this.userRepository.create(dto);
+          newUser.institution = user.institution;
+          newUser.createdBy = user.email;
+          newUser.updatedBy = user.email;
+          await this.userRepository.save(newUser);
+          return { message: `Usuario creado` };
+        } else {
+          return { message: `El usuario ya se encuentra registrado` };
+        }
+      }
+      else {
+        throw UnauthorizedException;
+      }
+    }
+
   }
-  async assignInstitution(id: string, institutionId:string, userEntity?: User): Promise<any> {
+  async assignInstitution(id: string, institutionId: string, userEntity?: User): Promise<any> {
     const user = await this.findById(id, userEntity);
-    const institution=await this.institutionRepository.findOne(institutionId);
-    if(institution){
-      user.institution=institution;
+    const institution = await this.institutionRepository.findOne(institutionId);
+    if (institution) {
+      user.institution = institution;
     }
-    else{
+    else {
       throw new NotFoundException({
         message: `Institution with id=${id} does not exist`,
       });
     }
     return await this.userRepository.save(user);
   }
-  
+
   async update(id: string, dto: EditUserDto, userEntity?: User): Promise<any> {
     const user = await this.findById(id, userEntity);
     const editedUser = Object.assign(user, dto);
@@ -90,12 +134,17 @@ export class UserService {
   async updatePartial(
     id: string,
     dto: EditUserDto,
-    userEntity?: User,
+    userEntity: User,
   ): Promise<any> {
-    const user = await this.findById(id, userEntity);
-    const updatedUser = { ...user };
-    updatedUser.status = dto.status;
-    return await this.userRepository.save(updatedUser);
+    if (userEntity.roles.includes(ADMIN_ROLE) || userEntity.roles.includes(INSTITUTION_ROLE)) {
+      const user = await this.findById(id, userEntity);
+      const updatedUser = { ...user };
+      updatedUser.status = dto.status;
+      return await this.userRepository.save(updatedUser);
+    } else {
+      throw UnauthorizedException;
+    }
+
   }
   async deletePartial(
     id: string,

@@ -37,7 +37,7 @@ export class User {
   @CreateDateColumn()
   updatedOn: Date;
   //Managment user columns
-  @Column({ type: 'bool', default: true })
+  @Column({ type: 'bool', default: false })
   status: boolean;
   @Column({ type: 'varchar', length: 255, nullable: true })
   avatarUrl: string;

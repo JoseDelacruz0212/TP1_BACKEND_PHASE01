@@ -2,6 +2,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     ManyToMany,
     ManyToOne,
     OneToMany,
@@ -37,10 +38,10 @@ export class Evaluation {
 
     @UpdateDateColumn()
     updatedOn: Date;
-
     @Column({ default: false })
     isDeleted: boolean;
-    @ManyToOne(() => Course , (courses) => courses.evaluations)
+    @ManyToOne(() => Course, (courses) => courses.evaluations, { eager: true })
+    @JoinColumn([{ name: "coursesId", referencedColumnName: "id" }])
     courses: Course;
     @OneToMany(() => Question, (questions) => questions.evaluations)
     questions!: Question[];

@@ -43,4 +43,6 @@ export class CreateUserDto {
     each: true,
   })
   roles: string[];
+  @ApiProperty()
+  insitutionId: string;
 }

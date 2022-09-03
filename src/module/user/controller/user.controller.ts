@@ -109,7 +109,7 @@ export class UserController {
     let data;
     //esto es admin
     if (this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted) {
-      data = await this.userService.updatePartial(id, dto);
+      data = await this.userService.updatePartial(id, dto,user);
     }
     //usuario
     else {
