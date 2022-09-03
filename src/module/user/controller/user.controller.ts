@@ -132,7 +132,7 @@ export class UserController {
 
     if (this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted) {
       // esto es un admin
-      data = await this.userService.delete(id);
+      data = await this.userService.delete(id,user);
     } else {
       // esto es un usuario
       data = await this.userService.delete(id, user);

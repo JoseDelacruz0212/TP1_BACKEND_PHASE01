@@ -108,6 +108,9 @@ export class CourseService {
       var course =await this.findById(id);
       course.name=updateCourseDto.name;
       course.description=updateCourseDto.description;
+      course.code=updateCourseDto?.code;
+      course.grade=updateCourseDto?.grade;
+      course.section=updateCourseDto?.section;
       course.updatedBy=user.email;
       course.updatedOn=new Date();
       await this.repository.update(id, course);

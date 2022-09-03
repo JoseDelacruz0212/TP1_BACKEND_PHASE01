@@ -10,5 +10,11 @@ export class CreateCourseDto {
   @IsNotEmpty()
   description: string;
   @ApiProperty()
+  code:string;
+  @ApiProperty()
+  grade:string;
+  @ApiProperty()
+  section:string;
+  @ApiProperty()
   institutionId: string;
 }

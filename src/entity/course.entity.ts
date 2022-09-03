@@ -23,6 +23,12 @@ export class Course {
 
   @Column({ nullable: false })
   description: string;
+  @Column({ nullable: true })
+  grade: string;
+  @Column({ nullable: true })
+  section: string;
+  @Column({ nullable: true })
+  code: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   createdBy: string;

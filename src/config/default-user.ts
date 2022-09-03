@@ -27,6 +27,7 @@ const setDefaultUser = async (config: ConfigService) => {
       createdBy: config.get<string>(DEFAULT_USER_USERNAME),
       updatedBy: config.get<string>(DEFAULT_USER_USERNAME),
       password: config.get<string>(DEFAULT_USER_PASSWORD),
+      status:true,
       roles: ['admin'],
     });
 

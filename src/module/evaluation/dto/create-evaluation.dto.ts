@@ -16,7 +16,7 @@ export class CreateEvaluationDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  numberQuestions: number;
+  status: number;
 
   @ApiProperty()
   @IsNotEmpty()

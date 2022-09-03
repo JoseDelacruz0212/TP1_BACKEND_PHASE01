@@ -64,23 +64,23 @@ export class UserService {
   async create(dto: CreateUserDto, user: User): Promise<any> {
     var email = dto.email;
     var isEmailExists = await this.findByEmail({ email });
-    if (user.roles.includes(ADMIN_ROLE)) {
-      if (dto.roles.includes(ADMIN_ROLE)) {
-        if (!isEmailExists) {
+    if (typeof isEmailExists === undefined) {
+      if (user.roles.includes(ADMIN_ROLE)) {
+        if (dto.roles.includes(ADMIN_ROLE)) {
           const newUser = await this.userRepository.create(dto);
           newUser.status = true;
           newUser.createdBy = user.email;
           newUser.updatedBy = user.email;
           await this.userRepository.save(newUser);
           return { message: `User ${newUser.email} created` };
-        } else {
-          return { message: `User ${dto.email} already Exists` };
         }
-      }
-      else {
-        if (!isEmailExists) {
-          const getInstitution = await this.institutionRepository.findOne(dto.insitutionId);
-          if (getInstitution) {
+        else {
+          var getInstitution = await this.institutionRepository.findOne({
+            where: {
+              id: dto.insitutionId
+            }
+          });
+          if (typeof getInstitution !== undefined) {
             const newUser = await this.userRepository.create(dto);
             newUser.institution = getInstitution;
             newUser.createdBy = user.email;
@@ -88,29 +88,28 @@ export class UserService {
             await this.userRepository.save(newUser);
             return { message: `User ${newUser.email} created` };
           } else {
-            return { message: `User ${dto.email} already Exists` };
+            throw NotFoundException;
           }
         }
       }
-    }
-    else {
-      if (user.roles.includes(INSTITUTION_ROLE)) {
-        if (!isEmailExists) {
+      else {
+        if (user.roles.includes(INSTITUTION_ROLE)) {
           const newUser = await this.userRepository.create(dto);
           newUser.institution = user.institution;
           newUser.createdBy = user.email;
           newUser.updatedBy = user.email;
+          newUser.updatedOn= new Date();
           await this.userRepository.save(newUser);
           return { message: `Usuario creado` };
-        } else {
-          return { message: `El usuario ya se encuentra registrado` };
+        }
+        else{
+          throw UnauthorizedException;
         }
       }
-      else {
-        throw UnauthorizedException;
-      }
     }
-
+    else {
+      return { message: `El usuario ya se encuentra registrado` };
+    }
   }
   async assignInstitution(id: string, institutionId: string, userEntity?: User): Promise<any> {
     const user = await this.findById(id, userEntity);
@@ -140,6 +139,8 @@ export class UserService {
       const user = await this.findById(id, userEntity);
       const updatedUser = { ...user };
       updatedUser.status = dto.status;
+      updatedUser.updatedBy=userEntity.email;
+      updatedUser.updatedOn=new Date();
       return await this.userRepository.save(updatedUser);
     } else {
       throw UnauthorizedException;

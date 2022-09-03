@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotAcceptableException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entity/course.entity';
 import { Evaluation } from 'src/entity/evaluation.entity';
@@ -57,14 +57,20 @@ export class EvaluationService {
   async update(id: string, updateEvaluationDto: UpdateEvaluationDto, user: User) {
     if (user.roles.includes(ADMIN_ROLE) || user.roles.includes(TEACHER_ROLE) || user.roles.includes(INSTITUTION_ROLE)) {
       var evaluation = await this.findById(id);
-      evaluation.name=updateEvaluationDto.name;
-      evaluation.duration=updateEvaluationDto.duration;
-      evaluation.numberQuestions=updateEvaluationDto.numberQuestions;
-      evaluation.availableOn=updateEvaluationDto.availableOn;
-      evaluation.updatedBy=user.email;
-      evaluation.updatedOn=new Date();
-      await this.repository.update(id, evaluation);
-      return { message: 'Evaluation updated' };
+      if(evaluation.status==0){
+        evaluation.name=updateEvaluationDto.name;
+        evaluation.duration=updateEvaluationDto.duration;
+        evaluation.status=updateEvaluationDto.status;
+        evaluation.availableOn=updateEvaluationDto.availableOn;
+        evaluation.updatedBy=user.email;
+        evaluation.updatedOn=new Date();
+        await this.repository.update(id, evaluation);
+        return { message: 'Evaluation updated' };
+      }else{
+        throw new NotAcceptableException(
+           { message: 'No se puede modificar una evaluación ya publicada' }
+        );
+      } 
     }
     else {
       throw new UnauthorizedException();

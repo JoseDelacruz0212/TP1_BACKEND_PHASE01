@@ -24,8 +24,8 @@ export class Evaluation {
 
     @Column({ type: 'int', nullable: false })
     duration: number;
-    @Column({ type: 'int', nullable: false })
-    numberQuestions: number;
+    @Column({ type: 'int', nullable: false,default:0 })
+    status: number;
 
     @Column({ nullable: false })
     createdBy: string;

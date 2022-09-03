@@ -30,11 +30,11 @@ export class User {
   //Audit Columns
   @Column({ type: 'varchar', length: 255, nullable: true })
   createdBy: string;
-  @UpdateDateColumn()
+  @CreateDateColumn()
   createdOn: Date;
   @Column({ type: 'varchar', length: 255, nullable: true })
   updatedBy: string;
-  @CreateDateColumn()
+  @UpdateDateColumn()
   updatedOn: Date;
   //Managment user columns
   @Column({ type: 'bool', default: false })
