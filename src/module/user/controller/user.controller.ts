@@ -9,7 +9,7 @@ import {
   Body,
   UseGuards,
   Patch,
- Request
+  Request
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { InjectRolesBuilder, RolesBuilder } from 'nest-access-control';
@@ -28,7 +28,7 @@ export class UserController {
     private readonly userService: UserService,
     @InjectRolesBuilder()
     private readonly rolesBuilder: RolesBuilder,
-  ) {}
+  ) { }
   @UseGuards(JwtAuthGuard)
   @Get()
   async getProfile(@Request() req) {
@@ -49,8 +49,8 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post()
-  async create(@Body() dto: CreateUserDto,@userDecorator() user: User) {
-    return await this.userService.create(dto,user);
+  async create(@Body() dto: CreateUserDto, @userDecorator() user: User) {
+    return await this.userService.create(dto, user);
   }
   @Auth({
     possession: 'own',
@@ -109,7 +109,7 @@ export class UserController {
     let data;
     //esto es admin
     if (this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted) {
-      data = await this.userService.updatePartial(id, dto,user);
+      data = await this.userService.updatePartial(id, dto, user);
     }
     //usuario
     else {
@@ -132,7 +132,7 @@ export class UserController {
 
     if (this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted) {
       // esto es un admin
-      data = await this.userService.delete(id,user);
+      data = await this.userService.delete(id, user);
     } else {
       // esto es un usuario
       data = await this.userService.delete(id, user);
