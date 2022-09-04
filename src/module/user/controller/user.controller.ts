@@ -34,10 +34,13 @@ export class UserController {
   async getProfile(@Request() req) {
     return req.user;
   }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Get('all')
-  async gettAll() {
-    return this.userService.getAll();
+  async gettAll(@userDecorator() user: User) {
+    return this.userService.getAll(user);
   }
+
   @Get('admin')
   async gettAllAdmin() {
     return this.userService.gettAllAdmin();

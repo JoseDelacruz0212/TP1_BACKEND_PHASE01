@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/co
 import { InjectRepository } from '@nestjs/typeorm';
 import { Institution } from 'src/entity/institution.entity';
 import { User } from 'src/entity/user.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { EditUserDto } from '../dtos/edit-user.dto';
 import {
@@ -25,18 +25,30 @@ export class UserService {
     private institutionRepository: Repository<Institution>
   ) { }
 
-  async getAll(): Promise<User[]> {
-    const list = await this.userRepository.find();
-    if (!list.length) {
-      throw new NotFoundException({ mesage: 'The list is empty' });
+  async getAll(user : User): Promise<User[]> {
+    let list;
+    if(user.roles.includes(ADMIN_ROLE)){
+      list = await this.userRepository.find();
+      if (!list.length) {
+        throw new NotFoundException({ mesage: 'The list is empty' });
+      }
+      return list;
+    }else{
+      list = await this.userRepository.find({where:{
+        institution:user.institution,
+        roles:Not("admin")
+      }});
+      return list;
     }
-    return list;
+
+   
   }
   async gettAllAdmin(): Promise<User[]> {
     const list = await this.userRepository.find({
       where: {
         roles: 'admin',
       },
+      select:(['idUser','email','name','lastName','createdOn'])
     });
     if (!list.length) {
       throw new NotFoundException({ mesage: 'The list is empty' });
