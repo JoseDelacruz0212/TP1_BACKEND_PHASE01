@@ -47,7 +47,11 @@ export class EvaluationService {
   }
   async getAll(user: User) {
     if (user.roles.includes(ADMIN_ROLE)) {
-      const evaluations = await this.repository.find();
+      const evaluations = await this.repository.find({
+        where:{
+          isDeleted:false
+        }
+      });
       return evaluations;
     }
     else {
