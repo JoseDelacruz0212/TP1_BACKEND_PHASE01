@@ -53,9 +53,13 @@ export class EvaluationService {
         }
       });
       return evaluations;
-    }
-    else {
-      throw new UnauthorizedException();
+    }else{
+      return this.repository.createQueryBuilder('evaluations')
+      .innerJoin('users_courses','uc')
+      .where("evaluations.coursesId=uc.courseId")
+      .andWhere("uc.userIdUser=:userId", { userId:user.idUser })
+      .getMany();
+
     }
   }
   async update(id: string, updateEvaluationDto: UpdateEvaluationDto, user: User) {

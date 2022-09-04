@@ -21,6 +21,7 @@ export class CourseService {
   //COD COURSE-01
   async create(createCourseDto: CreateCourseDto, user: User) {
     var institution;
+    const newCourse = this.repository.create(createCourseDto);
     if (createCourseDto.institutionId.length > 0 && user.roles.includes(ADMIN_ROLE)) {
       institution = await this.repositoryInstitution.findOne(createCourseDto.institutionId);
       if (!institution) {
@@ -43,11 +44,19 @@ export class CourseService {
         });
       }
     }
-    const newCourse = this.repository.create(createCourseDto);
     newCourse.institution = institution;
     newCourse.createdBy = user.email;
     newCourse.updatedBy = user.email;
-    await this.repository.save(newCourse);
+    await this.repository.save(newCourse).then(x=>{
+      var userCourse:UserCourse;
+      const assignUserToCourse= this.repositoryUserCourse.create(userCourse);
+      assignUserToCourse.user=user;
+      assignUserToCourse.course=newCourse;
+      assignUserToCourse.createdBy=user.email;
+      assignUserToCourse.updatedBy=user.email;
+      this.repositoryUserCourse.save(assignUserToCourse);
+    })
+
     return { course: newCourse };
   }
   //COD COURSE-02  
