@@ -125,7 +125,6 @@ export class UserController {
   @ApiBearerAuth()
   @Patch('updateAvatar/:id')
   async updateAvatar(
-    @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: CreateUserDto,
     @userDecorator() user: User,
   ) {

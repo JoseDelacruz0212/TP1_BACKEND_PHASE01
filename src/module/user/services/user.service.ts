@@ -247,7 +247,7 @@ export class UserService {
     userEntity: User,
   ): Promise<any> {
     const user = await this.findByToken( userEntity.idUser);
-    const editedUser = Object.assign(user, dto);
+    user.avatarUrl=dto.avatarUrl;
     return await this.userRepository.save(user);
 
   }
