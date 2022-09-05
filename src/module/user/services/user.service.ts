@@ -249,11 +249,10 @@ export class UserService {
     dto: EditUserDto,
     userEntity: User,
   ): Promise<any> {
-    const updatedUser = { ...userEntity };
-    updatedUser.avatarUrl = dto.avatarUrl;
-    updatedUser.updatedBy = userEntity.email;
-    updatedUser.updatedOn = new Date();
-    return await this.userRepository.save(updatedUser);
+    userEntity.avatarUrl=dto.avatarUrl;
+    userEntity.updatedBy=userEntity.email;
+    userEntity.updatedOn=new Date();
+    return await this.userRepository.save(userEntity);
   }
   async deletePartial(
     id: string,
