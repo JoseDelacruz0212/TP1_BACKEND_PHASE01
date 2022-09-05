@@ -29,13 +29,13 @@ export class UserCourseController {
   }
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Get(':id')
+  @Get('getAllByCourse/:id')
   async getAllByCourse(@Param('id') id: string,@userDecorator() user: User) {
     return this.userCourseService.getAllByCourse(id,user);
   }
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Get(':id')
+  @Get('getAllByUser/:id')
   async getAllByUser(@Param('id') id: string,@userDecorator() user: User) {
     return this.userCourseService.getAllByUser(id,user);
   }
