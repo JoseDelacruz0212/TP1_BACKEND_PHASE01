@@ -128,15 +128,7 @@ export class UserController {
     @userDecorator() user: User,
   ) {
     let data;
-    //esto es admin
-    if (this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted) {
-      data = await this.userService.updateAvatar(id, dto, user);
-    }
-    //usuario
-    else {
-      const { roles, ...rest } = dto;
-      data = await this.userService.updateAvatar(id, rest, user);
-    }
+    data = await this.userService.updateAvatar(dto,user);
     return { message: 'Edited', data };
   }
   @Auth({

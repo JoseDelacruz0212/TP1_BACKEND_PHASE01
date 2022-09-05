@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -29,9 +30,11 @@ export class UserCourse {
   @Column({ default: false })
   isDeleted: boolean;
 
-  @ManyToOne(() => User, (user) => user.courses)
+  @ManyToOne(() => User, (user) => user.courses, { eager: true })
+  @JoinColumn([{ name: "userIdUser", referencedColumnName: "idUser" }])
   user!: User;
 
-  @ManyToOne(() => Course, (course) => course.users)
+  @ManyToOne(() => Course, (course) => course.users, { eager: true })
+  @JoinColumn([{ name: "courseId", referencedColumnName: "id" }])
   course!: Course;
 }

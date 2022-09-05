@@ -80,16 +80,7 @@ export class UserService {
     }
     return list;
   }
-  async findByIdToModifyAvatar(id: string, userEntity?: User): Promise<User> {
-    const user = await this.userRepository
-      .findOne(id);
-    if (!user) {
-      throw new NotFoundException({
-        mesage: `No se encontro el usuario`,
-      });
-    }
-  return user;
-  }
+
 
   async findByIdToModifyStatus(id: string, userEntity?: User): Promise<User> {
     const user = await this.userRepository
@@ -255,12 +246,10 @@ export class UserService {
 
   }
   async updateAvatar(
-    id: string,
     dto: EditUserDto,
     userEntity: User,
   ): Promise<any> {
-    const user = await this.findByIdToModifyAvatar(id, userEntity);
-    const updatedUser = { ...user };
+    const updatedUser = { ...userEntity };
     updatedUser.avatarUrl = dto.avatarUrl;
     updatedUser.updatedBy = userEntity.email;
     updatedUser.updatedOn = new Date();
