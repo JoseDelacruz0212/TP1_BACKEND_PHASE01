@@ -121,6 +121,8 @@ export class UserController {
     }
     return { message: 'Edited', data };
   }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch('updateAvatar/:id')
   async updateAvatar(
     @Param('id', ParseUUIDPipe) id: string,

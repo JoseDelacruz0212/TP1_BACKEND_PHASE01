@@ -49,10 +49,7 @@ export class UserService {
             where: [
               {
                 institution: user.institution,
-                roles: Not("admin")
-              },
-              {
-                roles: Not("institution")
+                roles: Not("admin")&& Not("institution")
               }
             ]
           });
