@@ -50,7 +50,7 @@ export class EvaluationService {
       const evaluations = await this.repository.find({
         where:{
           isDeleted:false
-        }
+        },
       });
       return evaluations;
     }else{
@@ -58,7 +58,7 @@ export class EvaluationService {
       .innerJoin('users_courses','uc')
       .where("evaluations.coursesId=uc.courseId")
       .andWhere("uc.userIdUser=:userId", { userId:user.idUser })
-      .getMany();
+      .getRawMany();
 
     }
   }
