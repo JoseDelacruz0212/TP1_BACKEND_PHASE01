@@ -249,10 +249,10 @@ export class UserService {
     dto: EditUserDto,
     userEntity: User,
   ): Promise<any> {
-    userEntity.avatarUrl=dto.avatarUrl;
-    userEntity.updatedBy=userEntity.email;
-    userEntity.updatedOn=new Date();
-    return await this.userRepository.save(userEntity);
+    const user = await this.findByToken( userEntity.idUser);
+    const editedUser = Object.assign(user, dto);
+    return await this.userRepository.save(user);
+
   }
   async deletePartial(
     id: string,
@@ -270,7 +270,9 @@ export class UserService {
     return { message: `User ${user.email} deleted` };
   }
 
-
+  async findByToken(id:string) {
+    return await this.userRepository.findOne(id);
+  }
   async findByEmail(data: UserFindOne) {
     return await this.userRepository
       .createQueryBuilder('user')
