@@ -123,7 +123,7 @@ export class UserController {
   }
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Patch('updateAvatar/:id')
+  @Patch('updateAvatar')
   async updateAvatar(
     @Body() dto: CreateUserDto,
     @userDecorator() user: User,
