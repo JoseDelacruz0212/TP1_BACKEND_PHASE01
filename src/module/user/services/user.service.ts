@@ -11,6 +11,7 @@ import {
   TEACHER_ROLE
 } from '../../../config/constants';
 import { roles } from 'src/app.roles';
+import { and } from 'sequelize/types';
 export interface UserFindOne {
   idUser?: string;
   email?: string;
@@ -25,45 +26,100 @@ export class UserService {
     private institutionRepository: Repository<Institution>
   ) { }
 
-  async getAll(user : User): Promise<User[]> {
+  async getAll(user: User): Promise<User[]> {
     let list;
-    if(user.roles.includes(ADMIN_ROLE)){
+    if (user.roles.includes(ADMIN_ROLE)) {
       list = await this.userRepository.find();
       if (!list.length) {
         throw new NotFoundException({ mesage: 'The list is empty' });
       }
       return list;
-    }else{
-      if(user.roles.includes(INSTITUTION_ROLE)){
-        list = await this.userRepository.find({where:{
-          institution:user.institution,
-          roles:Not("admin")
-        }});
+    } else {
+      if (user.roles.includes(INSTITUTION_ROLE)) {
+        list = await this.userRepository.find({
+          where: {
+            institution: user.institution,
+            roles: Not("admin")
+          }
+        });
         return list;
-      }else{
-        list = await this.userRepository.find({where:{
-          institution:user.institution,
-          roles:Not(["admin","institution"])
-        }});
-        return list;
+      } else {
+        if (user.roles.includes(TEACHER_ROLE)) {
+          list = await this.userRepository.find({
+            where: [
+              {
+                institution: user.institution,
+                roles: Not("admin")
+              },
+              {
+                roles: Not("institution")
+              }
+            ]
+          });
+          return list;
+        }
+        else {
+          throw new UnauthorizedException();
+        }
 
       }
-      
+
     }
 
-   
+
   }
   async gettAllAdmin(): Promise<User[]> {
     const list = await this.userRepository.find({
       where: {
         roles: 'admin',
       },
-      select:(['idUser','email','name','lastName','createdOn'])
+      select: (['idUser', 'email', 'name', 'lastName', 'createdOn'])
     });
     if (!list.length) {
       throw new NotFoundException({ mesage: 'The list is empty' });
     }
     return list;
+  }
+  async findByIdToModifyAvatar(id: string, userEntity?: User): Promise<User> {
+    const user = await this.userRepository
+      .findOne(id);
+    if (!user) {
+      throw new NotFoundException({
+        mesage: `No se encontro el usuario`,
+      });
+    }
+  return user;
+  }
+
+  async findByIdToModifyStatus(id: string, userEntity?: User): Promise<User> {
+    const user = await this.userRepository
+      .findOne(id);
+    if (!user) {
+      throw new NotFoundException({
+        mesage: `No se encontro el usuario`,
+      });
+    }
+    if (userEntity.roles.includes(ADMIN_ROLE)) {
+      return user;
+    }
+    if (userEntity.roles.includes(INSTITUTION_ROLE)) {
+      if (user.roles.includes(ADMIN_ROLE) || user.roles.includes(INSTITUTION_ROLE)) {
+        throw new UnauthorizedException({
+          mesage: `No tiene los permisos para ejecutar está acción`,
+        });
+      } else {
+        return user;
+      }
+    }
+    if(userEntity.roles.includes(TEACHER_ROLE)){
+      if (user.roles.includes(ADMIN_ROLE) || user.roles.includes(INSTITUTION_ROLE)||user.roles.includes(TEACHER_ROLE)) {
+        throw new NotFoundException({
+          mesage: `No tiene los permisos para ejecutar está acción`,
+        });
+      } else {
+        return user;
+      }
+    }
   }
 
   async findByIdToDelete(id: string, userEntity?: User): Promise<User> {
@@ -86,7 +142,7 @@ export class UserService {
         return user;
       }
     }
-    if(user.idUser==userEntity.idUser){
+    if (user.idUser == userEntity.idUser) {
       return user;
     }
   }
@@ -187,7 +243,7 @@ export class UserService {
     userEntity: User,
   ): Promise<any> {
     if (userEntity.roles.includes(ADMIN_ROLE) || userEntity.roles.includes(INSTITUTION_ROLE)) {
-      const user = await this.findById(id, userEntity);
+      const user = await this.findByIdToModifyStatus(id, userEntity);
       const updatedUser = { ...user };
       updatedUser.status = dto.status;
       updatedUser.updatedBy = userEntity.email;
@@ -203,30 +259,30 @@ export class UserService {
     dto: EditUserDto,
     userEntity: User,
   ): Promise<any> {
-      const user = await this.findById(id, userEntity);
-      const updatedUser = { ...user };
-      updatedUser.avatarUrl = dto.avatarUrl;
-      updatedUser.updatedBy = userEntity.email;
-      updatedUser.updatedOn = new Date();
-      return await this.userRepository.save(updatedUser);
-    } 
+    const user = await this.findByIdToModifyAvatar(id, userEntity);
+    const updatedUser = { ...user };
+    updatedUser.avatarUrl = dto.avatarUrl;
+    updatedUser.updatedBy = userEntity.email;
+    updatedUser.updatedOn = new Date();
+    return await this.userRepository.save(updatedUser);
+  }
   async deletePartial(
     id: string,
     dto: EditUserDto,
     userEntity?: User,
   ): Promise<any> {
-    const user = await this.findById(id, userEntity);
+    const user = await this.findByIdToDelete(id, userEntity);
     const updatedUser = { ...user };
     updatedUser.isDeleted = dto.isDeleted;
     return await this.userRepository.save(updatedUser);
   }
   async delete(id: string, userEntity?: User): Promise<any> {
-      const user = await this.findByIdToDelete(id, userEntity);
-      await this.userRepository.remove(user);
-      return { message: `User ${user.email} deleted` };
-    }
+    const user = await this.findByIdToDelete(id, userEntity);
+    await this.userRepository.remove(user);
+    return { message: `User ${user.email} deleted` };
+  }
 
-  
+
   async findByEmail(data: UserFindOne) {
     return await this.userRepository
       .createQueryBuilder('user')

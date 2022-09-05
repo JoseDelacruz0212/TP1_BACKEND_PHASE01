@@ -49,7 +49,7 @@ export class UserCourseService {
 
   }
   async getAllByCourse(id: string, user: User) {
-    if (user.roles.includes(ADMIN_ROLE) || user.roles.includes(INSTITUTION_ROLE)) {
+    if (user.roles.includes(ADMIN_ROLE) || user.roles.includes(INSTITUTION_ROLE)||user.roles.includes(TEACHER_ROLE)) {
       const usersCourses = await this.repository.find({
         where: {
           course: id
