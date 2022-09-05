@@ -121,6 +121,24 @@ export class UserController {
     }
     return { message: 'Edited', data };
   }
+  @Patch('updateAvatar/:id')
+  async updateAvatar(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: CreateUserDto,
+    @userDecorator() user: User,
+  ) {
+    let data;
+    //esto es admin
+    if (this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted) {
+      data = await this.userService.updateAvatar(id, dto, user);
+    }
+    //usuario
+    else {
+      const { roles, ...rest } = dto;
+      data = await this.userService.updateAvatar(id, rest, user);
+    }
+    return { message: 'Edited', data };
+  }
   @Auth({
     possession: 'own',
     action: 'delete',

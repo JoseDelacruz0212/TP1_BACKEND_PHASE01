@@ -198,6 +198,18 @@ export class UserService {
     }
 
   }
+  async updateAvatar(
+    id: string,
+    dto: EditUserDto,
+    userEntity: User,
+  ): Promise<any> {
+      const user = await this.findById(id, userEntity);
+      const updatedUser = { ...user };
+      updatedUser.avatarUrl = dto.avatarUrl;
+      updatedUser.updatedBy = userEntity.email;
+      updatedUser.updatedOn = new Date();
+      return await this.userRepository.save(updatedUser);
+    } 
   async deletePartial(
     id: string,
     dto: EditUserDto,

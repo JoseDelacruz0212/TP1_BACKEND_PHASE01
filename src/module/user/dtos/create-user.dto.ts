@@ -45,4 +45,6 @@ export class CreateUserDto {
   roles: string[];
   @ApiProperty()
   insitutionId: string;
+  @ApiProperty()
+  avatarUrl: string;
 }
