@@ -34,11 +34,21 @@ export class UserService {
       }
       return list;
     }else{
-      list = await this.userRepository.find({where:{
-        institution:user.institution,
-        roles:Not("admin")
-      }});
-      return list;
+      if(user.roles.includes(INSTITUTION_ROLE)){
+        list = await this.userRepository.find({where:{
+          institution:user.institution,
+          roles:Not("admin")
+        }});
+        return list;
+      }else{
+        list = await this.userRepository.find({where:{
+          institution:user.institution,
+          roles:Not(["admin","institution"])
+        }});
+        return list;
+
+      }
+      
     }
 
    

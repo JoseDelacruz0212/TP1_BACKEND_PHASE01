@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entity/course.entity';
 import { Evaluation } from 'src/entity/evaluation.entity';
 import { User } from 'src/entity/user.entity';
-import { getRepository, Repository } from 'typeorm';
+import { getRepository, In, Repository } from 'typeorm';
 import { CreateEvaluationDto } from '../dto/create-evaluation.dto';
 import { UpdateEvaluationDto } from '../dto/update-evaluation.dto';
 import {
@@ -54,12 +54,20 @@ export class EvaluationService {
       });
       return evaluations;
     }else{
-      return this.repository.createQueryBuilder('evaluations')
-      .innerJoin('users_courses','uc')
+      var array=new Array();
+      var getListofEvaluations= await this.repository.createQueryBuilder('evaluations')
+      .innerJoinAndSelect('users_courses','uc')
       .where("evaluations.coursesId=uc.courseId")
       .andWhere("uc.userIdUser=:userId", { userId:user.idUser })
-      .getRawMany();
-
+      .andWhere("evaluations.isDeleted=false")
+      .getMany();
+      getListofEvaluations.forEach(x=>{
+        array.push(x.id)
+      })
+      var getParseEvaluations= await this.repository.find({where:{
+        id:In (array)
+      }})
+      return getParseEvaluations;
     }
   }
   async update(id: string, updateEvaluationDto: UpdateEvaluationDto, user: User) {
