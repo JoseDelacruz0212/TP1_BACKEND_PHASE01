@@ -24,6 +24,8 @@ import { QuestionModule } from './module/question/question.module';
 import { RoleModule } from './module/role/role.module';
 import { UserRoleModule } from './module/user-role/user-role.module';
 import { OptionModule } from './module/option/option.module';
+import { MailService } from './module/mail/service/mail.service';
+import { MailController } from './module/mail/controller/mail.controller';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -60,7 +62,7 @@ import { OptionModule } from './module/option/option.module';
     UserRoleModule,
     OptionModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, MailController],
+  providers: [AppService, MailService],
 })
 export class AppModule {}
