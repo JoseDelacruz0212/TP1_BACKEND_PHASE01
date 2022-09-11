@@ -149,7 +149,7 @@ export class EvaluationService {
         evaluation.status = updateEvaluationDto.status;
         evaluation.availableOn = updateEvaluationDto.availableOn;
         evaluation.updatedBy = user.email;
-        if (updateEvaluationDto!.json!.length > 0) {
+        if (updateEvaluationDto.json!=undefined) {
           evaluation.json=updateEvaluationDto.json;
           await this.removeQuestions(evaluation);
           const json = JSON.parse(evaluation.json);
