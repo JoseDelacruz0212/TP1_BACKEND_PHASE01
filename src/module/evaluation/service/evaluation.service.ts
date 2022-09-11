@@ -241,15 +241,19 @@ export class EvaluationService {
       }
     } else {
       if (evaluation.status == 2) {
-        const json = JSON.parse(evaluation.json);
-        const nodes = json["ROOT"]["nodes"] as string[];
-        nodes
-          .map(nodeF => ({ nodeId: nodeF, body: json[nodeF] }))
-          .forEach(node => {
-            json[node.nodeId]["props"]["answer"] = "";
-          });
-        evaluation.json = JSON.stringify(json);
-        return evaluation;
+        if(evaluation.json.length>0){
+          const json = JSON.parse(evaluation.json);
+          const nodes = json["ROOT"]["nodes"] as string[];
+          nodes
+            .map(nodeF => ({ nodeId: nodeF, body: json[nodeF] }))
+            .forEach(node => {
+              json[node.nodeId]["props"]["answer"] = "";
+            });
+          evaluation.json = JSON.stringify(json);
+          return evaluation;
+        }
+      }else{
+        throw new NotFoundException();
       }
     }
   }
