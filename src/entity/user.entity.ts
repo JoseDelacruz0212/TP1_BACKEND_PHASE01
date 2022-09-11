@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Institution } from './institution.entity';
 import { UserCourse } from './user-course.entity';
+import { UserEvaluation } from './user-evaluation.entity';
 import { UserRoles } from './user-roles.entity';
 @Entity({ name: 'users' })
 export class User {
@@ -51,6 +52,8 @@ export class User {
   institution: Institution;
   @OneToMany(() => UserCourse, (course) => course.user)
   courses: UserCourse[];
+  @OneToMany(() => UserEvaluation, (evaluation) => evaluation.user)
+  evaluation: UserEvaluation[];
   @OneToMany(() => UserRoles, (rolesActive) => rolesActive.user)
   rolesActive: UserRoles[];
 

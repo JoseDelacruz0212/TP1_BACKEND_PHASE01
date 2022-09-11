@@ -4,6 +4,8 @@ import { Evaluation } from 'src/entity/evaluation.entity';
 
 export class CreateQuestionDto {
   @ApiProperty()
+  code: string;
+  @ApiProperty()
   question: string;
   @ApiProperty()
   answer: string;

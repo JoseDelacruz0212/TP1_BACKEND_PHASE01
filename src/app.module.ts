@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccessControlModule } from 'nest-access-control';
-
 import {
   DB_DATABASE,
   DB_HOST,
@@ -22,7 +21,7 @@ import { ObjectiveModule } from './module/objective/objective.module';
 import { EvaluationModule } from './module/evaluation/evaluation.module';
 import { QuestionModule } from './module/question/question.module';
 import { RoleModule } from './module/role/role.module';
-import { UserRoleModule } from './module/user-role/user-role.module';
+import { UserRoleModule } from './module/user-evaluation/user-evaluation.module';
 import { OptionModule } from './module/option/option.module';
 import { MailService } from './module/mail/service/mail.service';
 import { MailController } from './module/mail/controller/mail.controller';

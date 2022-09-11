@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Course } from './course.entity';
 import { Question } from './question.entity';
+import { UserEvaluation } from './user-evaluation.entity';
 @Entity({ name: 'evaluations' })
 export class Evaluation {
     @PrimaryGeneratedColumn('uuid')
@@ -46,5 +47,8 @@ export class Evaluation {
     courses: Course;
     @OneToMany(() => Question, (questions) => questions.evaluations)
     questions!: Question[];
+    @OneToMany(() => UserEvaluation, (user) => user.evaluation)
+    users!: UserEvaluation[];
+
 
 }

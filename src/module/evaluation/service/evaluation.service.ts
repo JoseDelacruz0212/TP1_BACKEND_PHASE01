@@ -109,6 +109,7 @@ export class EvaluationService {
              questionDTO.question=node.body["props"]!["question"];
              questionDTO.points=node.body["props"]!["points"];
              questionDTO.type=node.body["type"]!["resolvedName"];
+             questionDTO.code=node.nodeId;
              var questionModel =this.repositoryQuestion.create(questionDTO);
              questionModel.evaluations=evaluation;
              questionModel.createdBy=user.email;
@@ -121,7 +122,8 @@ export class EvaluationService {
         await this.repository.update(id, evaluation);
    
         return { message: 'Evaluation updated' };
-      } else {
+      }
+       else {
         throw new NotAcceptableException(
           { message: 'No se puede modificar una evaluación ya publicada' }
         );

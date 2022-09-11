@@ -15,7 +15,10 @@ import { Option } from './option.enetity';
     @PrimaryGeneratedColumn('uuid')
     id: string;
     
-    @Column({ type: 'varchar', length: 3000, nullable: true })
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    code: string;
+
+    @Column({ type: 'text' })
     question: string;
       
     @Column({ type: 'varchar', length: 255, nullable: true })
@@ -27,7 +30,7 @@ import { Option } from './option.enetity';
     @Column({ type: 'varchar', length: 255, nullable: true})
     type: string;
       
-    @Column({ type: 'int', nullable: true })
+    @Column({type: "decimal", precision: 10, scale: 2, default: 0})
     points: number;
 
     @Column({ type: 'bit', default:false,nullable: true })
