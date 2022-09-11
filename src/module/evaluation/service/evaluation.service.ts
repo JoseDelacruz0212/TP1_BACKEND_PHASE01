@@ -149,7 +149,7 @@ export class EvaluationService {
         evaluation.status = updateEvaluationDto.status;
         evaluation.availableOn = updateEvaluationDto.availableOn;
         evaluation.updatedBy = user.email;
-        if (updateEvaluationDto.json.length > 0) {
+        if (updateEvaluationDto!.json!.length > 0) {
           evaluation.json=updateEvaluationDto.json;
           await this.removeQuestions(evaluation);
           const json = JSON.parse(evaluation.json);
@@ -182,12 +182,14 @@ export class EvaluationService {
         if (evaluation.status == 1) {
           evaluation.status=2;
           await this.repository.update(id, evaluation);
+        }else{
+          throw new NotAcceptableException(
+                { message: 'No se puede modificar una evaluación ya publicada' }
+              );
         }
       }
       //  else {
-      //   throw new NotAcceptableException(
-      //     { message: 'No se puede modificar una evaluación ya publicada' }
-      //   );
+      //   
       // }
     }
     else {

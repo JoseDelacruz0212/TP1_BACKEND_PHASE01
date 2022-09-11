@@ -27,7 +27,7 @@ export class Evaluation {
     duration: number;
     @Column({ type: 'int', nullable: false,default:0 })
     status: number;
-    @Column({ type: "text"})
+    @Column({ type: "text", nullable: true})
     json:string;
     @Column({ nullable: false })
     createdBy: string;
