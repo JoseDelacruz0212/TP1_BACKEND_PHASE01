@@ -21,6 +21,9 @@ export class UserEvaluationService {
         }
         newUserEvaluation.evaluation=evaluation;
         newUserEvaluation.user=user;
+        newUserEvaluation.createdBy=user.email;
+        newUserEvaluation.updatedBy=user.email;
+        newUserEvaluation.updatedOn= new Date();
         await this.repository.save(newUserEvaluation);
         return {};
       }
