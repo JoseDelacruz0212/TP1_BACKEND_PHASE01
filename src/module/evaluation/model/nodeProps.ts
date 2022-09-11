@@ -8,3 +8,7 @@ export interface NodeForBD {
     nodeType: string;
     props: NodeProps;
 }
+export interface NodeToCompare {
+    nodeId: string;
+    answer: string;
+}

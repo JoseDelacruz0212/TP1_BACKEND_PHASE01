@@ -17,7 +17,6 @@ export class CreateEvaluationDto {
   @ApiProperty()
   @IsNotEmpty()
   status: number;
-  @ApiProperty()
   json:string;
   @ApiProperty()
   @IsNotEmpty()

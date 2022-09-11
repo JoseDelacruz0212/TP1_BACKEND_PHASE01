@@ -6,21 +6,76 @@ import { User } from 'src/entity/user.entity';
 import { getRepository, In, Repository } from 'typeorm';
 import { CreateEvaluationDto } from '../dto/create-evaluation.dto';
 import { UpdateEvaluationDto } from '../dto/update-evaluation.dto';
-import { CreateQuestionDto  } from '../../question/dto/create-question.dto';
-import { NodeForBD, NodeProps } from '../model/nodeProps';
+import { CreateQuestionDto } from '../../question/dto/create-question.dto';
+import { NodeForBD, NodeProps, NodeToCompare } from '../model/nodeProps';
 import {
   ADMIN_ROLE,
   INSTITUTION_ROLE,
   TEACHER_ROLE
 } from '../../../config/constants';
 import { Question } from 'src/entity/question.entity';
+import { GeneratePoints } from '../dto/generate-points.dto';
+import { UserEvaluation } from 'src/entity/user-evaluation.entity';
+import {CreateUserEvaluationDto} from'../../user-evaluation/dto/create-user-evaluation.dto';
 @Injectable()
 export class EvaluationService {
   constructor(
     @InjectRepository(Evaluation) private repository: Repository<Evaluation>,
     @InjectRepository(Course) private repositoryCourse: Repository<Course>,
-    @InjectRepository(Question) private repositoryQuestion: Repository<Question> 
-){ }
+    @InjectRepository(Question) private repositoryQuestion: Repository<Question>,
+    @InjectRepository(UserEvaluation) private repositoryUserEvaluation: Repository<UserEvaluation>
+  ) { }
+
+  async generatePoints(generatePoints: GeneratePoints, user: User) {
+    const evaluation = await this.repository.findOne(generatePoints.evaluationId);
+    if (!evaluation) {
+      throw new NotFoundException();
+    }
+    if (evaluation.json.length > 0) {
+      let sumPoints = 0;
+      const json = JSON.parse(generatePoints.json);
+      const nodes = json["ROOT"]["nodes"] as string[];
+      const arrayQuestionUser: CreateQuestionDto[] =[];
+      const arrayCodesQuestion: string[]=[];
+      nodes
+        .map( nodeF => ({ nodeId: nodeF, body: json[nodeF] }))
+        .forEach( node => {
+          var questionUser = new CreateQuestionDto();
+          var answerInput = node.body["props"]!["answerInput"];
+          questionUser.answer=answerInput;
+          questionUser.code=node.nodeId;
+          arrayQuestionUser.push(questionUser);
+          arrayCodesQuestion.push(node.nodeId);
+        });
+      var getQuestions=await this.repositoryQuestion.find({
+        where:{
+          evaluations:evaluation,
+          code:In(arrayCodesQuestion)
+        },
+        select:['points','answer']
+      });
+      arrayQuestionUser.map(x=>{
+        getQuestions.map(y=>{
+          if(x.answer.trim().toUpperCase()==y.answer.trim().toUpperCase()){
+            sumPoints+=Number(y.points);
+          }
+        })
+      })
+      var dtoUserEvaluation=new CreateUserEvaluationDto();
+      var UserEvaluation=await this.repositoryUserEvaluation.create(dtoUserEvaluation);
+      UserEvaluation.evaluation=evaluation;
+      UserEvaluation.user=user;
+      UserEvaluation.createdBy=user.email;
+      UserEvaluation.updatedBy=user.email;
+      UserEvaluation.json=generatePoints.json;
+      UserEvaluation.updatedOn=new Date();
+      await this.repositoryUserEvaluation.save(UserEvaluation);
+      return { points: sumPoints };
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
   async create(createEvaluationDto: CreateEvaluationDto, user: User) {
     if (user.roles.includes(TEACHER_ROLE) || user.roles.includes(INSTITUTION_ROLE) || user.roles.includes(ADMIN_ROLE)) {
       const course = this.repositoryCourse.findOne(createEvaluationDto.courseId);
@@ -95,39 +150,44 @@ export class EvaluationService {
         evaluation.availableOn = updateEvaluationDto.availableOn;
         evaluation.updatedBy = user.email;
         evaluation.json = updateEvaluationDto.json;
-        if(evaluation.json.length>0){
+        if (evaluation.json.length > 0) {
           await this.removeQuestions(evaluation);
           const json = JSON.parse(evaluation.json);
           const nodes = json["ROOT"]["nodes"] as string[];
           nodes
             .map(nodeF => ({ nodeId: nodeF, body: json[nodeF] }))
             .forEach(node => {
-             var questionDTO= new CreateQuestionDto();
-             questionDTO.answer=node.body["props"]!["answer"];
-             questionDTO.hasAnswer=node.body["props"]!["hasAnswer"];
-             questionDTO.isSensitive=node.body["props"]!["isCaseSensitive"];
-             questionDTO.question=node.body["props"]!["question"];
-             questionDTO.points=node.body["props"]!["points"];
-             questionDTO.type=node.body["type"]!["resolvedName"];
-             questionDTO.code=node.nodeId;
-             var questionModel =this.repositoryQuestion.create(questionDTO);
-             questionModel.evaluations=evaluation;
-             questionModel.createdBy=user.email;
-             questionModel.updatedBy=user.email;
-             nodesForBD.push(questionModel);
+              var questionDTO = new CreateQuestionDto();
+              questionDTO.answer = node.body["props"]!["answer"];
+              questionDTO.hasAnswer = node.body["props"]!["hasAnswer"];
+              questionDTO.isSensitive = node.body["props"]!["isCaseSensitive"];
+              questionDTO.question = node.body["props"]!["question"];
+              questionDTO.points = node.body["props"]!["points"];
+              questionDTO.type = node.body["type"]!["resolvedName"];
+              questionDTO.code = node.nodeId;
+              var questionModel = this.repositoryQuestion.create(questionDTO);
+              questionModel.evaluations = evaluation;
+              questionModel.createdBy = user.email;
+              questionModel.updatedBy = user.email;
+              nodesForBD.push(questionModel);
             });
-            await this.repositoryQuestion.save(nodesForBD);
+          await this.repositoryQuestion.save(nodesForBD);
         }
         evaluation.updatedOn = new Date();
         await this.repository.update(id, evaluation);
-   
+
         return { message: 'Evaluation updated' };
       }
-       else {
-        throw new NotAcceptableException(
-          { message: 'No se puede modificar una evaluación ya publicada' }
-        );
+      else {
+        if (evaluation.status == 1) {
+
+        }
       }
+      //  else {
+      //   throw new NotAcceptableException(
+      //     { message: 'No se puede modificar una evaluación ya publicada' }
+      //   );
+      // }
     }
     else {
       throw new UnauthorizedException();
@@ -150,12 +210,12 @@ export class EvaluationService {
   }
   async removeQuestions(evaluation: Evaluation) {
     const evaluations = await this.repositoryQuestion.find({
-      where:{
-        evaluations:evaluation
+      where: {
+        evaluations: evaluation
       }
     });
-    if(evaluations.length>0)
-    await this.repositoryQuestion.remove(evaluations);
+    if (evaluations.length > 0)
+      await this.repositoryQuestion.remove(evaluations);
     return true;
   }
 

@@ -6,6 +6,7 @@ import { Institution } from 'src/entity/institution.entity';
 import { Objective } from 'src/entity/objective.entity';
 import { Question } from 'src/entity/question.entity';
 import { UserCourse } from 'src/entity/user-course.entity';
+import { UserEvaluation } from 'src/entity/user-evaluation.entity';
 import { User } from 'src/entity/user.entity';
 import { CourseController } from '../course/controller/course.controller';
 import { CourseService } from '../course/service/course.service';
@@ -13,7 +14,7 @@ import { ObjectiveController } from './controller/objective.controller';
 import { ObjectiveService } from './service/objective.service';
 
 @Module({
-imports: [TypeOrmModule.forFeature([Course,Institution,UserCourse,User,Evaluation,Objective,Question])],
+imports: [TypeOrmModule.forFeature([Course,Institution,UserCourse,User,Evaluation,Objective,Question,UserEvaluation])],
   controllers: [ObjectiveController,CourseController],
   providers: [ObjectiveService,CourseService]
 })

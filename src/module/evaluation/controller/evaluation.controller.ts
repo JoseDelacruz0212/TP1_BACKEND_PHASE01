@@ -4,6 +4,7 @@ import { userDecorator } from 'src/commom/decorators/user.decorator';
 import { User } from 'src/entity/user.entity';
 import { JwtAuthGuard } from 'src/module/auth/guards/jwt-auth.guard';
 import { CreateEvaluationDto } from '../dto/create-evaluation.dto';
+import { GeneratePoints } from '../dto/generate-points.dto';
 import { UpdateEvaluationDto } from '../dto/update-evaluation.dto';
 import { EvaluationService } from '../service/evaluation.service';
 @ApiTags('evaluation')
@@ -52,4 +53,11 @@ export class EvaluationController {
     return this.evaluationService.findByEvaluationId(id,user);
   }
   
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post('/GeneratePoints')
+  async generatePoints(@Body() generatePoints: GeneratePoints, @userDecorator() user: User) {
+    return this.evaluationService.generatePoints(generatePoints, user);
+  }
 }
