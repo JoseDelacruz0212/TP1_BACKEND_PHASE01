@@ -31,10 +31,6 @@ export class EvaluationService {
     if (!evaluation) {
       throw new NotFoundException();
     }
-    const checkEx=this.findHasEvaluation(evaluation,user);
-    if(checkEx){
-      throw new UnauthorizedException();
-    }
     if (evaluation.json.length > 0) {
       let sumPoints = 0;
       const json = JSON.parse(generatePoints.json);
