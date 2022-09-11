@@ -49,6 +49,7 @@ export class EvaluationController {
   @ApiBearerAuth()
   @Get(':id')
   async getOne(@Param('id') id: string, @userDecorator() user: User) {
-    return this.evaluationService.findById(id);
+    return this.evaluationService.findByEvaluationId(id,user);
   }
+  
 }

@@ -15,22 +15,22 @@ import { Option } from './option.enetity';
     @PrimaryGeneratedColumn('uuid')
     id: string;
     
-    @Column({ type: 'varchar', length: 3000, nullable: false })
+    @Column({ type: 'varchar', length: 3000, nullable: true })
     question: string;
       
-    @Column({ type: 'varchar', length: 255, nullable: false })
+    @Column({ type: 'varchar', length: 255, nullable: true })
     answer: string;
       
-    @Column({ type: 'bit', nullable: false })
+    @Column({ type: 'bit', default:false ,nullable: true})
     hasAnswer: Boolean;
       
-    @Column({ type: 'varchar', length: 255, nullable: false })
+    @Column({ type: 'varchar', length: 255, nullable: true})
     type: string;
       
-    @Column({ type: 'int', nullable: false })
+    @Column({ type: 'int', nullable: true })
     points: number;
 
-    @Column({ type: 'bit', nullable: false })
+    @Column({ type: 'bit', default:false,nullable: true })
     isSensitive:Boolean;
     @CreateDateColumn()
     createdOn: Date;
@@ -38,10 +38,10 @@ import { Option } from './option.enetity';
     @UpdateDateColumn()
     updatedOn: Date;
   
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     createdBy: string;
   
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     updatedBy: string;
   
     @Column({ default: false })

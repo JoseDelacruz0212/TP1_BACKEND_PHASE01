@@ -12,7 +12,7 @@ export class MailController {
         const mail = {
             to: email,
             subject: 'Hello World',
-            from: 'lhm2001@hotmail.com',
+            from: 'jodelacruz0212@hotmail.com',
             text: 'Hello World',
             html: '<h1>Hello World</h1>'
         };
