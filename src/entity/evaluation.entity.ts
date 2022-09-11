@@ -50,5 +50,6 @@ export class Evaluation {
     @OneToMany(() => UserEvaluation, (user) => user.evaluation)
     users!: UserEvaluation[];
 
+    flag:boolean;
 
 }
