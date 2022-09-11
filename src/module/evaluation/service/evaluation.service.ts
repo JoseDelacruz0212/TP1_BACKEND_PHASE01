@@ -149,8 +149,8 @@ export class EvaluationService {
         evaluation.status = updateEvaluationDto.status;
         evaluation.availableOn = updateEvaluationDto.availableOn;
         evaluation.updatedBy = user.email;
-        evaluation.json = updateEvaluationDto.json;
-        if (evaluation.json.length > 0) {
+        if (updateEvaluationDto.json.length > 0) {
+          evaluation.json=updateEvaluationDto.json;
           await this.removeQuestions(evaluation);
           const json = JSON.parse(evaluation.json);
           const nodes = json["ROOT"]["nodes"] as string[];
@@ -180,7 +180,8 @@ export class EvaluationService {
       }
       else {
         if (evaluation.status == 1) {
-
+          evaluation.status=2;
+          await this.repository.update(id, evaluation);
         }
       }
       //  else {
