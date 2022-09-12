@@ -70,7 +70,7 @@ export class EvaluationService {
       UserEvaluation.json=generatePoints.json;
       UserEvaluation.updatedOn=new Date();
       await this.repositoryUserEvaluation.save(UserEvaluation);
-      return { points: sumPoints };
+      return { points: sumPoints,evaluation:evaluation.name,course:evaluation.courses.name,institution:user.institution.name};
     } else {
       throw new NotFoundException();
     }
@@ -130,6 +130,9 @@ export class EvaluationService {
       var getParseEvaluations = await this.repository.find({
         where: {
           id: In(array)
+        },
+        order:{
+          availableOn:'DESC'
         }
       })
       const ev = getParseEvaluations.map(async e => {
@@ -184,14 +187,12 @@ export class EvaluationService {
           evaluation.status=2;
           await this.repository.update(id, evaluation);
         }else{
-          throw new NotAcceptableException(
-                { message: 'No se puede modificar una evaluación ya publicada' }
-              );
+          if (evaluation.status == 2) {
+            evaluation.status=3;
+            await this.repository.update(id, evaluation);
+          }
         }
       }
-      //  else {
-      //   
-      // }
     }
     else {
       throw new UnauthorizedException();
