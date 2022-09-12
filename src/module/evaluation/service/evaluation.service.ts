@@ -263,7 +263,7 @@ export class EvaluationService {
 
   
    async findHasEvaluation(evaluationE:Evaluation,user:User){
-    const hasExam= this.repositoryUserEvaluation.findOne({
+    const hasExam= await this.repositoryUserEvaluation.findOne({
       where:{
         evaluation:evaluationE,
         user:user
