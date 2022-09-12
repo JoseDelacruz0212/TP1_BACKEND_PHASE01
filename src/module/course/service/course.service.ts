@@ -65,6 +65,10 @@ export class CourseService {
       const courses = await this.repository.find({
         where: {
           isDeleted: false,
+          
+        },
+        order:{
+          updatedOn:'DESC'
         }
       });
       return courses;
@@ -83,6 +87,7 @@ export class CourseService {
         .innerJoin('users_courses','uc')
         .where("course.id=uc.courseId")
         .andWhere("uc.userIdUser=:userId", { userId:userRequest.idUser })
+        .orderBy("course.updatedOn",'DESC')
         .getMany();
       }
     }

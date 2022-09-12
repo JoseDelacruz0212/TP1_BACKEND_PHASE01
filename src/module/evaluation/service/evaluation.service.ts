@@ -112,7 +112,7 @@ export class EvaluationService {
           isDeleted: false
         },
         order:{
-          availableOn:'DESC'
+          updatedOn:'DESC'
         }
       });
       var ev = evaluations.map(e => {
@@ -136,7 +136,7 @@ export class EvaluationService {
           id: In(array)
         },
         order:{
-          availableOn:'DESC'
+          updatedOn:'DESC'
         }
       })
       if(user.roles.includes(USER_ROLE)){
