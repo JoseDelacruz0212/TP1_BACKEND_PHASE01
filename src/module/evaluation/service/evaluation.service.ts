@@ -132,12 +132,12 @@ export class EvaluationService {
           id: In(array)
         }
       })
-      var ev = getParseEvaluations.map(e => {
+      const ev = getParseEvaluations.map(async e => {
         const { json, ...rest } = e;
-        rest.flag=  this.findHasEvaluation(e,user);
+        rest.flag=  await  this.findHasEvaluation(e,user);
         return rest;
       })
-      return ev;
+      return Promise.all(ev);
     }
   }
   async update(id: string, updateEvaluationDto: UpdateEvaluationDto, user: User) {
@@ -262,7 +262,7 @@ export class EvaluationService {
   }
 
   
-   findHasEvaluation(evaluationE:Evaluation,user:User){
+   async findHasEvaluation(evaluationE:Evaluation,user:User){
     const hasExam= this.repositoryUserEvaluation.findOne({
       where:{
         evaluation:evaluationE,
