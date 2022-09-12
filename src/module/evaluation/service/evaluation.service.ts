@@ -269,10 +269,10 @@ export class EvaluationService {
         user:user
       }
     })
-    if(!hasExam){
-      return false;
+    if(hasExam){
+      return true;
     }
-    return true;
+    return false;
   }
 }
 
