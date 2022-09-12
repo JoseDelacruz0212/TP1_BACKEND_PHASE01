@@ -16,3 +16,4 @@ export const DEFAULT_USER_PASSWORD = 'DEFAULT_USER_PASSWORD';
 export const ADMIN_ROLE='admin';
 export const INSTITUTION_ROLE='institution';
 export const TEACHER_ROLE='teacher';
+export const USER_ROLE='user';

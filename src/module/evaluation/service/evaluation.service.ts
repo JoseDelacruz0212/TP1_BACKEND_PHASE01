@@ -11,7 +11,8 @@ import { NodeForBD, NodeProps, NodeToCompare } from '../model/nodeProps';
 import {
   ADMIN_ROLE,
   INSTITUTION_ROLE,
-  TEACHER_ROLE
+  TEACHER_ROLE,
+  USER_ROLE
 } from '../../../config/constants';
 import { Question } from 'src/entity/question.entity';
 import { GeneratePoints } from '../dto/generate-points.dto';
@@ -135,9 +136,12 @@ export class EvaluationService {
           availableOn:'DESC'
         }
       })
+      if(user.roles.includes(USER_ROLE)){
+        getParseEvaluations=getParseEvaluations.filter(x=>x.status!=0);
+      }
       const ev = getParseEvaluations.map(async e => {
         const { json, ...rest } = e;
-        rest.flag=  await  this.findHasEvaluation(e,user);
+        rest.flag= await this.findHasEvaluation(e,user);
         return rest;
       })
       return Promise.all(ev);
