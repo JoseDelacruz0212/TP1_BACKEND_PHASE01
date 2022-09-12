@@ -111,6 +111,9 @@ export class EvaluationService {
         where: {
           isDeleted: false
         },
+        order:{
+          availableOn:'DESC'
+        }
       });
       var ev = evaluations.map(e => {
         const { json, ...rest } = e;
