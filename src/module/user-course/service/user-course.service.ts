@@ -33,13 +33,13 @@ export class UserCourseService {
           message: `User  does not exist`,
         });
       }
-      var userExitsInCourse=this.repository.findOne({where:{
-        user:user,
-        course:course
-      }})
-      if(userExitsInCourse){
-        throw new Error("El usuario ya ha sido registrado");
-      }
+      // var userExitsInCourse=this.repository.findOne({where:{
+      //   user:user,
+      //   course:course
+      // }})
+      // if(userExitsInCourse){
+      //   throw new Error("El usuario ya ha sido registrado");
+      // }
       var userCourse:UserCourse;
       const newUserCourse = this.repository.create(userCourse);
       newUserCourse.course = course;

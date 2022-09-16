@@ -17,14 +17,16 @@ import {
 import { Question } from 'src/entity/question.entity';
 import { GeneratePoints } from '../dto/generate-points.dto';
 import { UserEvaluation } from 'src/entity/user-evaluation.entity';
-import {CreateUserEvaluationDto} from'../../user-evaluation/dto/create-user-evaluation.dto';
+import { CreateUserEvaluationDto } from '../../user-evaluation/dto/create-user-evaluation.dto';
+import { UserCourse } from 'src/entity/user-course.entity';
 @Injectable()
 export class EvaluationService {
   constructor(
     @InjectRepository(Evaluation) private repository: Repository<Evaluation>,
-    @InjectRepository(Course) private repositoryCourse: Repository<Course>,
+    @InjectRepository(Course) private repositoryCourse: Repository<Course>, 
     @InjectRepository(Question) private repositoryQuestion: Repository<Question>,
-    @InjectRepository(UserEvaluation) private repositoryUserEvaluation: Repository<UserEvaluation>
+    @InjectRepository(UserEvaluation) private repositoryUserEvaluation: Repository<UserEvaluation>,
+    @InjectRepository(UserCourse) private repositoryUserCourse: Repository<UserCourse>
   ) { }
 
   async generatePoints(generatePoints: GeneratePoints, user: User) {
@@ -36,42 +38,42 @@ export class EvaluationService {
       let sumPoints = 0;
       const json = JSON.parse(generatePoints.json);
       const nodes = json["ROOT"]["nodes"] as string[];
-      const arrayQuestionUser: CreateQuestionDto[] =[];
-      const arrayCodesQuestion: string[]=[];
+      const arrayQuestionUser: CreateQuestionDto[] = [];
+      const arrayCodesQuestion: string[] = [];
       nodes
-        .map( nodeF => ({ nodeId: nodeF, body: json[nodeF] }))
-        .forEach( node => {
+        .map(nodeF => ({ nodeId: nodeF, body: json[nodeF] }))
+        .forEach(node => {
           var questionUser = new CreateQuestionDto();
           var answerInput = node.body["props"]!["answerInput"];
-          questionUser.answer=answerInput;
-          questionUser.code=node.nodeId;
+          questionUser.answer = answerInput;
+          questionUser.code = node.nodeId;
           arrayQuestionUser.push(questionUser);
           arrayCodesQuestion.push(node.nodeId);
         });
-      var getQuestions=await this.repositoryQuestion.find({
-        where:{
-          evaluations:evaluation,
-          code:In(arrayCodesQuestion)
+      var getQuestions = await this.repositoryQuestion.find({
+        where: {
+          evaluations: evaluation,
+          code: In(arrayCodesQuestion)
         },
-        select:['points','answer']
+        select: ['points', 'answer']
       });
-      arrayQuestionUser.map(x=>{
-        getQuestions.map(y=>{
-          if(x.answer.trim().toUpperCase()==y.answer.trim().toUpperCase()){
-            sumPoints+=Number(y.points);
+      arrayQuestionUser.map(x => {
+        getQuestions.map(y => {
+          if (x.answer.trim().toUpperCase() == y.answer.trim().toUpperCase()) {
+            sumPoints += Number(y.points);
           }
         })
       })
-      var dtoUserEvaluation=new CreateUserEvaluationDto();
-      var UserEvaluation=await this.repositoryUserEvaluation.create(dtoUserEvaluation);
-      UserEvaluation.evaluation=evaluation;
-      UserEvaluation.user=user;
-      UserEvaluation.createdBy=user.email;
-      UserEvaluation.updatedBy=user.email;
-      UserEvaluation.json=generatePoints.json;
-      UserEvaluation.updatedOn=new Date();
+      var dtoUserEvaluation = new CreateUserEvaluationDto();
+      var UserEvaluation = await this.repositoryUserEvaluation.create(dtoUserEvaluation);
+      UserEvaluation.evaluation = evaluation;
+      UserEvaluation.user = user;
+      UserEvaluation.createdBy = user.email;
+      UserEvaluation.updatedBy = user.email;
+      UserEvaluation.json = generatePoints.json;
+      UserEvaluation.updatedOn = new Date();
       await this.repositoryUserEvaluation.save(UserEvaluation);
-      return { points: sumPoints,evaluation:evaluation.name,course:evaluation.courses.name,institution:user.institution.name};
+      return { points: sumPoints, evaluation: evaluation.name, course: evaluation.courses.name, institution: user.institution.name };
     } else {
       throw new NotFoundException();
     }
@@ -111,8 +113,8 @@ export class EvaluationService {
         where: {
           isDeleted: false
         },
-        order:{
-          updatedOn:'DESC'
+        order: {
+          updatedOn: 'DESC'
         }
       });
       var ev = evaluations.map(e => {
@@ -135,22 +137,23 @@ export class EvaluationService {
         where: {
           id: In(array)
         },
-        order:{
-          updatedOn:'DESC'
+        order: {
+          updatedOn: 'DESC'
         }
       })
-      if(user.roles.includes(USER_ROLE)){
-        getParseEvaluations=getParseEvaluations.filter(x=>x.status!=0);
+      if (user.roles.includes(USER_ROLE)) {
+        getParseEvaluations = getParseEvaluations.filter(x => x.status != 0);
       }
       const ev = getParseEvaluations.map(async e => {
         const { json, ...rest } = e;
-        rest.flag= await this.findHasEvaluation(e,user);
+        rest.flag = await this.findHasEvaluation(e, user);
         return rest;
       })
       return Promise.all(ev);
     }
   }
   async update(id: string, updateEvaluationDto: UpdateEvaluationDto, user: User) {
+
     if (user.roles.includes(ADMIN_ROLE) || user.roles.includes(TEACHER_ROLE) || user.roles.includes(INSTITUTION_ROLE)) {
       const nodesForBD: Question[] = [];
       var evaluation = await this.findById(id);
@@ -158,10 +161,26 @@ export class EvaluationService {
         evaluation.name = updateEvaluationDto.name;
         evaluation.duration = updateEvaluationDto.duration;
         evaluation.status = updateEvaluationDto.status;
+  
+        // Así quedaría la el if , solo faltaría ejecutar tu servicio de mandar correos , porque ya recibes todos los correos de los usuarios que son de rol user.
+        if (updateEvaluationDto.status == 1) {
+          const listOfUsers = await this.repositoryUserCourse.find(
+            {
+              where: {
+                course: evaluation.courses
+              },
+              select:["user"]
+            });
+            const usersToSendEmail=listOfUsers.filter(x=>x.user.roles.includes("user"));
+            usersToSendEmail.map(x=>{
+              //sendEmail(x.user.email);
+            })
+        }
+
         evaluation.availableOn = updateEvaluationDto.availableOn;
         evaluation.updatedBy = user.email;
-        if (updateEvaluationDto.json!=undefined) {
-          evaluation.json=updateEvaluationDto.json;
+        if (updateEvaluationDto.json != undefined) {
+          evaluation.json = updateEvaluationDto.json;
           await this.removeQuestions(evaluation);
           const json = JSON.parse(evaluation.json);
           const nodes = json["ROOT"]["nodes"] as string[];
@@ -190,12 +209,13 @@ export class EvaluationService {
         return { message: 'Evaluation updated' };
       }
       else {
+
         if (evaluation.status == 1) {
-          evaluation.status=2;
+          evaluation.status = 2;
           await this.repository.update(id, evaluation);
-        }else{
+        } else {
           if (evaluation.status == 2) {
-            evaluation.status=3;
+            evaluation.status = 3;
             await this.repository.update(id, evaluation);
           }
         }
@@ -252,7 +272,7 @@ export class EvaluationService {
       }
     } else {
       if (evaluation.status == 2) {
-        if(evaluation.json.length>0){
+        if (evaluation.json.length > 0) {
           const json = JSON.parse(evaluation.json);
           const nodes = json["ROOT"]["nodes"] as string[];
           nodes
@@ -263,21 +283,21 @@ export class EvaluationService {
           evaluation.json = JSON.stringify(json);
           return evaluation;
         }
-      }else{
+      } else {
         throw new NotFoundException();
       }
     }
   }
 
-  
-   async findHasEvaluation(evaluationE:Evaluation,user:User){
-    const hasExam= await this.repositoryUserEvaluation.findOne({
-      where:{
-        evaluation:evaluationE,
-        user:user
+
+  async findHasEvaluation(evaluationE: Evaluation, user: User) {
+    const hasExam = await this.repositoryUserEvaluation.findOne({
+      where: {
+        evaluation: evaluationE,
+        user: user
       }
     })
-    if(hasExam){
+    if (hasExam) {
       return true;
     }
     return false;

@@ -30,13 +30,13 @@ export class EvaluationController {
     return this.evaluationService.getAllByCourse(id, user);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)//
+  @ApiBearerAuth()// Estos dos validan el token del usuario
   @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() updateEvaluationDto: UpdateEvaluationDto, 
-    @userDecorator() user: User
+    @userDecorator() user: User // Con este decorator obtenemos toda la info del usuario
   ) {
     return this.evaluationService.update(id, updateEvaluationDto,user);
   }
