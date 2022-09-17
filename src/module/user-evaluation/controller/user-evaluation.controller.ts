@@ -16,11 +16,18 @@ export class UserEvaluationController {
   async create(@Body() createUserEvaluationDto: CreateUserEvaluationDto,@userDecorator() user: User) {
     return this.UserEvaluationService.create(createUserEvaluationDto,user);
   }
+  
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Get()
-  async findAll(@userDecorator() user: User) {
-    return this.UserEvaluationService.getAll(user);
+  @Get('ByEvaluation/:id')
+  async findByEvaluation(@Param('id') id: string,@userDecorator() user: User) {
+    return this.UserEvaluationService.getAll(id,user);
+  }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('byUser/:evaluationId/:userId')
+  async findByUserAndEvaluation(@Param('evaluationId') evaluationId: string,@Param('userId') userId: string,@userDecorator() user: User) {
+    return this.UserEvaluationService.getByUser(evaluationId,userId,user);
   }
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

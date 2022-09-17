@@ -27,18 +27,33 @@ export class UserEvaluationService {
         await this.repository.save(newUserEvaluation);
         return {};
       }
-    
-      async getAll(user:User) {
+      async getAll( evaluationId:string,user:User) {
         if(user.roles.includes(ADMIN_ROLE)||user.roles.includes(INSTITUTION_ROLE)||user.roles.includes(TEACHER_ROLE)){
-          const usersRoles = await this.repository.find();
-          return usersRoles;
+          const usersEvaluations = await this.repository.find({where:{
+            evaluation:evaluationId
+          }});
+          return usersEvaluations;
         }else{
-          const usersRoles = await this.repository.find({where:{
+          const usersEvaluations = await this.repository.find({where:{
             user:user
           }});
-          return usersRoles;
+          return usersEvaluations;
         }
-
+      }
+      async getByUser( evaluationId:string,userId:String,user:User) {
+        if(user.roles.includes(ADMIN_ROLE)||user.roles.includes(INSTITUTION_ROLE)||user.roles.includes(TEACHER_ROLE)){
+          const usersEvaluations = await this.repository.find({where:{
+            evaluation:evaluationId,
+            user:userId
+          }});
+          return usersEvaluations;
+        }else{
+          const usersEvaluations = await this.repository.find({where:{
+            user:user.idUser,
+            evaluation:evaluationId
+          }});
+          return usersEvaluations;
+        }
       }
     
       async findById(id: string) {
