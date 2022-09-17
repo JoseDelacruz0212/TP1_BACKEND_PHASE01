@@ -98,28 +98,16 @@ export class UserController {
     }
     return { message: 'Edited', data };
   }
-  @Auth({
-    possession: 'own',
-    action: 'update',
-    resource: AppResource.User,
-  })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch(':id')
   async updatePartial(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: CreateUserDto,
     @userDecorator() user: User,
   ) {
-    let data;
-    //esto es admin
-    if (this.rolesBuilder.can(user.roles).updateAny(AppResource.User).granted) {
-      data = await this.userService.updatePartial(id, dto, user);
-    }
-    //usuario
-    else {
-      const { roles, ...rest } = dto;
-      data = await this.userService.updatePartial(id, rest, user);
-    }
-    return { message: 'Edited', data };
+   let data = await this.userService.updatePartial(id, dto, user);
+    return { message: 'Edited' };
   }
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
