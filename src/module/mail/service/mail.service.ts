@@ -9,8 +9,22 @@ export class MailService {
     }
 
     async send(mail: SendGrid.MailDataRequired) {
+        
+/*         var mail:SendGrid.MailDataRequired;
+
+        mail = {
+            to: ['lhm2001@hotmail.com'],
+            subject: 'Hello World',
+            from: 'u20181g907@upc.edu.pe',
+            text: 'Hello World',
+            html: '<h1>Hello World</h1>'
+        }; */
+
+        console.log("mailservice");
+        console.log(this.configService.get<string>('SEND_GRID_KEY'));
         const transport = await SendGrid.send(mail);
 
+    
         console.log(`Email successfully dispatched to ${mail.to}`)
         return transport;
     }

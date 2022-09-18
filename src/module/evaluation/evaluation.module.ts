@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MailService } from '../mail/service/mail.service';
 import { Course } from 'src/entity/course.entity';
 import { Evaluation } from 'src/entity/evaluation.entity';
 import { Institution } from 'src/entity/institution.entity';
@@ -20,6 +21,6 @@ import { EvaluationService } from './service/evaluation.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Course,Institution,UserCourse,User,Evaluation,Objective,Question,UserEvaluation])],
   controllers: [EvaluationController,CourseController,InstitutionController,UserEvaluationController],
-  providers: [EvaluationService,CourseService,InstitutionService,UserEvaluationService]
+  providers: [EvaluationService,CourseService,InstitutionService,UserEvaluationService,MailService]
 })
 export class EvaluationModule {}

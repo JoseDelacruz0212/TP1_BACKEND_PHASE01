@@ -8,15 +8,15 @@ export class MailController {
     ){}
 
     @Post('send')
-    async sendEmail(@Query('email') email) {
+    async sendEmail() {
         const mail = {
-            to: email,
+            to: ['lhm2001@hotmail.com'],
             subject: 'Hello World',
-            from: 'jodelacruz0212@hotmail.com',
+            from: 'u20181g907@upc.edu.pe',
             text: 'Hello World',
             html: '<h1>Hello World</h1>'
         };
 
-        return await this.sendgridService.send(mail);
+       return await this.sendgridService.send(mail);
     }
 }

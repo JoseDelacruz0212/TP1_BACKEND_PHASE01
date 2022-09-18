@@ -25,8 +25,11 @@ import { UserRoleModule } from './module/user-evaluation/user-evaluation.module'
 import { OptionModule } from './module/option/option.module';
 import { MailService } from './module/mail/service/mail.service';
 import { MailController } from './module/mail/controller/mail.controller';
+import { ScheduleModule } from '@nestjs/schedule';
+import { Evaluation } from './entity/evaluation.entity';
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
@@ -59,7 +62,8 @@ import { MailController } from './module/mail/controller/mail.controller';
     QuestionModule,
     RoleModule,
     UserRoleModule,
-    OptionModule
+    OptionModule,
+    TypeOrmModule.forFeature([Evaluation])
   ],
   controllers: [AppController, MailController],
   providers: [AppService, MailService],

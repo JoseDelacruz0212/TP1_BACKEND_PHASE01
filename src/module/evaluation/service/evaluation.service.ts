@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, NotAcceptableException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entity/course.entity';
 import { Evaluation } from 'src/entity/evaluation.entity';
@@ -17,16 +17,27 @@ import {
 import { Question } from 'src/entity/question.entity';
 import { GeneratePoints } from '../dto/generate-points.dto';
 import { UserEvaluation } from 'src/entity/user-evaluation.entity';
-import { CreateUserEvaluationDto } from '../../user-evaluation/dto/create-user-evaluation.dto';
+
+import {CreateUserEvaluationDto} from'../../user-evaluation/dto/create-user-evaluation.dto';
 import { UserCourse } from 'src/entity/user-course.entity';
+import { MailService } from 'src/module/mail/service/mail.service';
+import * as SendGrid from '@sendgrid/mail';
+import { Cron, CronExpression } from '@nestjs/schedule';
+
+
 @Injectable()
 export class EvaluationService {
+
   constructor(
     @InjectRepository(Evaluation) private repository: Repository<Evaluation>,
     @InjectRepository(Course) private repositoryCourse: Repository<Course>, 
     @InjectRepository(Question) private repositoryQuestion: Repository<Question>,
     @InjectRepository(UserEvaluation) private repositoryUserEvaluation: Repository<UserEvaluation>,
-    @InjectRepository(UserCourse) private repositoryUserCourse: Repository<UserCourse>
+
+    @InjectRepository(UserCourse) private repositoryUserCourse: Repository<UserCourse>,
+    
+    private readonly sendgridService:MailService
+
   ) { }
 
   async generatePoints(generatePoints: GeneratePoints, user: User) {
@@ -154,28 +165,50 @@ export class EvaluationService {
   }
   async update(id: string, updateEvaluationDto: UpdateEvaluationDto, user: User) {
 
+    console.log("update1")
+
     if (user.roles.includes(ADMIN_ROLE) || user.roles.includes(TEACHER_ROLE) || user.roles.includes(INSTITUTION_ROLE)) {
       const nodesForBD: Question[] = [];
       var evaluation = await this.findById(id);
       if (evaluation.status == 0) {
-        evaluation.name = updateEvaluationDto.name;
-        evaluation.duration = updateEvaluationDto.duration;
-        evaluation.status = updateEvaluationDto.status;
-  
-        // Así quedaría la el if , solo faltaría ejecutar tu servicio de mandar correos , porque ya recibes todos los correos de los usuarios que son de rol user.
+
         if (updateEvaluationDto.status == 1) {
+
+        console.log("evaluation.courses");
+        console.log(evaluation.courses);
+
           const listOfUsers = await this.repositoryUserCourse.find(
             {
               where: {
                 course: evaluation.courses
               },
-              select:["user"]
+              select:['id']
+
             });
+
+            console.log("listofusers");
+            console.log(listOfUsers);
+
             const usersToSendEmail=listOfUsers.filter(x=>x.user.roles.includes("user"));
+            console.log(usersToSendEmail);
+
             usersToSendEmail.map(x=>{
-              //sendEmail(x.user.email);
+              console.log(x.user.email);
+              const mail = {
+                to: [x.user.email],
+                subject: 'Hello World',
+                from: 'u20181g907@upc.edu.pe',
+                text: 'Hello World',
+                html: '<h1>Hello World</h1>'
+            };
+              this.sendgridService.send(mail);
             })
         }
+
+        evaluation.name = updateEvaluationDto.name;
+        evaluation.duration = updateEvaluationDto.duration;
+        evaluation.status = updateEvaluationDto.status;
+  
 
         evaluation.availableOn = updateEvaluationDto.availableOn;
         evaluation.updatedBy = user.email;
@@ -302,6 +335,7 @@ export class EvaluationService {
     }
     return false;
   }
+
 }
 
 
