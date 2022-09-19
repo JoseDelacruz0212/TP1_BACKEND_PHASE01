@@ -76,7 +76,7 @@ export class UserEvaluationService {
         if(user.roles.includes(INSTITUTION_ROLE)||user.roles.includes(TEACHER_ROLE)||user.roles.includes(ADMIN_ROLE)){
           const usersEvaluation = await this.repository.findOne({where:{
             evaluation:UpdateUserEvaluationDto.evaluationId,
-            user:UpdateUserEvaluationDto.evaluationId
+            user:UpdateUserEvaluationDto.userId
           }});
           if (!usersEvaluation){
             throw new NotFoundException({
@@ -85,6 +85,7 @@ export class UserEvaluationService {
           }
           usersEvaluation.points=UpdateUserEvaluationDto.points;
           await this.repository.update(usersEvaluation.id,usersEvaluation);
+          return usersEvaluation;
         }else{
           throw new UnauthorizedException();
         }
