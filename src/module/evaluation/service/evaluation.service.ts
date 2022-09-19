@@ -18,11 +18,11 @@ import { Question } from 'src/entity/question.entity';
 import { GeneratePoints } from '../dto/generate-points.dto';
 import { UserEvaluation } from 'src/entity/user-evaluation.entity';
 
-import {CreateUserEvaluationDto} from'../../user-evaluation/dto/create-user-evaluation.dto';
+import { CreateUserEvaluationDto } from '../../user-evaluation/dto/create-user-evaluation.dto';
 import { UserCourse } from 'src/entity/user-course.entity';
 import { MailService } from 'src/module/mail/service/mail.service';
 import * as SendGrid from '@sendgrid/mail';
-import { Cron, CronExpression } from '@nestjs/schedule';
+
 
 
 @Injectable()
@@ -30,13 +30,13 @@ export class EvaluationService {
 
   constructor(
     @InjectRepository(Evaluation) private repository: Repository<Evaluation>,
-    @InjectRepository(Course) private repositoryCourse: Repository<Course>, 
+    @InjectRepository(Course) private repositoryCourse: Repository<Course>,
     @InjectRepository(Question) private repositoryQuestion: Repository<Question>,
     @InjectRepository(UserEvaluation) private repositoryUserEvaluation: Repository<UserEvaluation>,
 
     @InjectRepository(UserCourse) private repositoryUserCourse: Repository<UserCourse>,
-    
-    private readonly sendgridService:MailService
+
+    private readonly sendgridService: MailService
 
   ) { }
 
@@ -83,6 +83,7 @@ export class EvaluationService {
       UserEvaluation.updatedBy = user.email;
       UserEvaluation.json = generatePoints.json;
       UserEvaluation.updatedOn = new Date();
+      UserEvaluation.points = sumPoints;
       await this.repositoryUserEvaluation.save(UserEvaluation);
       return { points: sumPoints, evaluation: evaluation.name, course: evaluation.courses.name, institution: user.institution.name };
     } else {
@@ -173,42 +174,32 @@ export class EvaluationService {
       if (evaluation.status == 0) {
 
         if (updateEvaluationDto.status == 1) {
-
-        console.log("evaluation.courses");
-        console.log(evaluation.courses);
-
           const listOfUsers = await this.repositoryUserCourse.find(
             {
               where: {
-                course: evaluation.courses
+                course: evaluation.courses,
+                isDeleted:false
               },
-              select:['id']
-
+              select: ['id']
             });
-
-            console.log("listofusers");
-            console.log(listOfUsers);
-
-            const usersToSendEmail=listOfUsers.filter(x=>x.user.roles.includes("user"));
-            console.log(usersToSendEmail);
-
-            usersToSendEmail.map(x=>{
-              console.log(x.user.email);
-              const mail = {
-                to: [x.user.email],
-                subject: 'Hello World',
-                from: 'u20181g907@upc.edu.pe',
-                text: 'Hello World',
-                html: '<h1>Hello World</h1>'
+          const usersToSendEmail = listOfUsers.filter(x => x.user.roles.includes("user"));
+          usersToSendEmail.map(x => {
+            console.log(x.user.email);
+            const mail = {
+              to: [x.user.email],
+              subject: 'Hello World',
+              from: 'u20181g907@upc.edu.pe',
+              text: 'Hello World',
+              html: ""
             };
-              this.sendgridService.send(mail);
-            })
+            this.sendgridService.send(mail);
+          })
         }
 
         evaluation.name = updateEvaluationDto.name;
         evaluation.duration = updateEvaluationDto.duration;
         evaluation.status = updateEvaluationDto.status;
-  
+
 
         evaluation.availableOn = updateEvaluationDto.availableOn;
         evaluation.updatedBy = user.email;

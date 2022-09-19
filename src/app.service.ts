@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,9 +13,9 @@ export class AppService {
   ) { }
 
   getHello(): string {
-    return 'Hello World!';
+      throw new NotFoundException();
+     ;
   }
-
 
   @Cron(CronExpression.EVERY_MINUTE)
   async evaluationTime(){
@@ -25,13 +25,10 @@ export class AppService {
     const listOfEvaluations = await this.repository.find(
       {
         where: {
-          availableOn: created
+          availableOn: created,
+          isDeleted:false
         }
-
       });
-
-      console.log(created);
-
       listOfEvaluations.map(async x=>{
         if(x.status==1){
           x.status=2;
