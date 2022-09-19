@@ -196,8 +196,6 @@ export class EvaluationService {
   }
   async update(id: string, updateEvaluationDto: UpdateEvaluationDto, user: User) {
 
-    console.log("update1")
-
     if (user.roles.includes(ADMIN_ROLE) || user.roles.includes(TEACHER_ROLE) || user.roles.includes(INSTITUTION_ROLE)) {
       const nodesForBD: Question[] = [];
       var evaluation = await this.findById(id);
@@ -213,20 +211,24 @@ export class EvaluationService {
               select: ['id']
             });
           const usersToSendEmail = listOfUsers.filter(x => x.user.roles.includes("user"));
-          usersToSendEmail.map(x => {
-            const mail = {
-              to: [x.user.email],
-              subject: 'Evaluación publicada',
-              from: 'no.reply.EduChain@gmail.com',
-              text:"Evaluación publicada",
-              html: `<h1>Hola, ${x.user.name} ${x.user.lastName}!</h1><br><p>
-               El motivo de este correo es para informarle que se ha publicado una nueva evaluación ${evaluation.name} en el curso de ${evaluation.courses.name} con la fecha de disponibilidad:${evaluation.availableOn.toLocaleString()}.
-             </p>
-             <h5>Atentamente, <br>
-               El equipo de EduChain</h5>`
-            };
-            this.sendgridService.send(mail);
-          })
+          try {
+            usersToSendEmail.map(x => {
+              const mail = {
+                to: [x.user.email],
+                subject: 'Evaluación publicada',
+                from: 'no.reply.EduChain@gmail.com',
+                text:"Evaluación publicada",
+                html: `<h1>Hola, ${x.user.name} ${x.user.lastName}!</h1><br><p>
+                 El motivo de este correo es para informarle que se ha publicado una nueva evaluación ${evaluation.name} en el curso de ${evaluation.courses.name} con la fecha de disponibilidad:${evaluation.availableOn.toLocaleString()}.
+               </p>
+               <h5>Atentamente, <br>
+                 El equipo de EduChain</h5>`
+              };
+              this.sendgridService.send(mail);
+            })
+          } catch (error) {
+            console.log("error",error);
+          }
         }
 
         evaluation.name = updateEvaluationDto.name;
