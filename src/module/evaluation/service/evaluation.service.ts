@@ -40,6 +40,35 @@ export class EvaluationService {
 
   ) { }
 
+  async generateRequest(evaluationId: string, user: User) {
+    const evaluation = await this.repository.findOne(evaluationId);
+    if (!evaluation) {
+      throw new NotFoundException();
+    }
+    const listOfUsers = await this.repositoryUserCourse.find(
+      {
+        where: {
+          course: evaluation.courses,
+          isDeleted: false
+        },
+        select: ['id']
+      });
+    const teachersToSendEmail = listOfUsers.filter(x => x.user.roles.includes(TEACHER_ROLE));
+    teachersToSendEmail.map(x => {
+      const mail = {
+        to: [x.user.email],
+        subject: 'Reclamo de evaluación',
+        from: 'no.reply.EduChain@gmail.com',
+        html: `<h1>Hola, ${x.user.name} ${x.user.lastName}!</h1><br><p>
+               El motivo de este correo es para informarle que el alumno: ${user.name} ${user.lastName} ha generado un ticket de reclamo para la evaluación ${evaluation.name} en el curso de ${evaluation.courses.name}.
+             </p>
+             <h5>Atentamente, <br>
+               El equipo de EduChain</h5>`
+      };
+      this.sendgridService.send(mail);
+    });
+
+  }
   async generatePoints(generatePoints: GeneratePoints, user: User) {
     const evaluation = await this.repository.findOne(generatePoints.evaluationId);
     if (!evaluation) {
@@ -178,19 +207,21 @@ export class EvaluationService {
             {
               where: {
                 course: evaluation.courses,
-                isDeleted:false
+                isDeleted: false
               },
               select: ['id']
             });
           const usersToSendEmail = listOfUsers.filter(x => x.user.roles.includes("user"));
           usersToSendEmail.map(x => {
-            console.log(x.user.email);
             const mail = {
               to: [x.user.email],
-              subject: 'Hello World',
-              from: 'u20181g907@upc.edu.pe',
-              text: 'Hello World',
-              html: ""
+              subject: 'Evaluación publicada',
+              from: 'no.reply.EduChain@gmail.com',
+              html: `<h1>Hola, ${x.user.name} ${x.user.lastName}!</h1><br><p>
+               El motivo de este correo es para informarle que se ha publicado una nueva evaluación ${evaluation.name} en el curso de ${evaluation.courses.name} con la fecha de disponibilidad:${evaluation.availableOn.toLocaleString()}.
+             </p>
+             <h5>Atentamente, <br>
+               El equipo de EduChain</h5>`
             };
             this.sendgridService.send(mail);
           })

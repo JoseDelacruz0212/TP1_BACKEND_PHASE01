@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException,UnauthorizedException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ADMIN_ROLE, INSTITUTION_ROLE, TEACHER_ROLE } from 'src/config/constants';
 import { Evaluation } from 'src/entity/evaluation.entity';
@@ -6,6 +6,7 @@ import { UserEvaluation } from 'src/entity/user-evaluation.entity';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserEvaluationDto } from '../dto/create-user-evaluation.dto';
+import { UpdateUserEvaluationDto } from '../dto/update-user-role.dto';
 @Injectable()
 export class UserEvaluationService {
     constructor(
@@ -69,5 +70,24 @@ export class UserEvaluationService {
         const UserEvaluation = await this.findById(id);
         await this.repository.remove(UserEvaluation);
         return {};
+      }
+
+      async update(id: string, UpdateUserEvaluationDto: UpdateUserEvaluationDto,user:User) {
+        if(user.roles.includes(INSTITUTION_ROLE)||user.roles.includes(TEACHER_ROLE)||user.roles.includes(ADMIN_ROLE)){
+          const usersEvaluation = await this.repository.findOne({where:{
+            evaluation:UpdateUserEvaluationDto.evaluationId,
+            user:UpdateUserEvaluationDto.evaluationId
+          }});
+          if (!usersEvaluation){
+            throw new NotFoundException({
+              message: `UserEvaluation with id=${id} does not exist`,
+            });
+          }
+          usersEvaluation.points=UpdateUserEvaluationDto.points;
+          await this.repository.update(usersEvaluation.id,usersEvaluation);
+        }else{
+          throw new UnauthorizedException();
+        }
+    
       }
 }

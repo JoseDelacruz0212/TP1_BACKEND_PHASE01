@@ -35,7 +35,7 @@ export class AppService {
           await this.repository.update(x.id,x);
         }
 
-      })
+      });
   }
 
 }

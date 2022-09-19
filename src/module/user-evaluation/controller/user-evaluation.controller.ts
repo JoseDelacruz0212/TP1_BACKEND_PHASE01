@@ -31,6 +31,16 @@ export class UserEvaluationController {
   }
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() UpdateUserEvaluationDto: UpdateUserEvaluationDto,
+    @userDecorator() user: User
+  ) {
+    return this.UserEvaluationService.update(id, UpdateUserEvaluationDto,user);
+  }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.UserEvaluationService.remove(id);

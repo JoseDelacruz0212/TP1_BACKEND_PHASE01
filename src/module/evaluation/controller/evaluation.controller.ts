@@ -52,7 +52,12 @@ export class EvaluationController {
   async getOne(@Param('id') id: string, @userDecorator() user: User) {
     return this.evaluationService.findByEvaluationId(id,user);
   }
-  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post('/generateRequest')
+  async generateRequest (@Body() evaluationId: string, @userDecorator() user: User) {
+    return this.evaluationService.generateRequest(evaluationId, user);
+  }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
