@@ -59,6 +59,7 @@ export class EvaluationService {
         to: [x.user.email],
         subject: 'Reclamo de evaluación',
         from: 'no.reply.EduChain@gmail.com',
+        text:"Reclamo de evaluación",
         html: `<h1>Hola, ${x.user.name} ${x.user.lastName}!</h1><br><p>
                El motivo de este correo es para informarle que el alumno: ${user.name} ${user.lastName} ha generado un ticket de reclamo para la evaluación ${evaluation.name} en el curso de ${evaluation.courses.name}.
              </p>
@@ -217,6 +218,7 @@ export class EvaluationService {
               to: [x.user.email],
               subject: 'Evaluación publicada',
               from: 'no.reply.EduChain@gmail.com',
+              text:"Evaluación publicada",
               html: `<h1>Hola, ${x.user.name} ${x.user.lastName}!</h1><br><p>
                El motivo de este correo es para informarle que se ha publicado una nueva evaluación ${evaluation.name} en el curso de ${evaluation.courses.name} con la fecha de disponibilidad:${evaluation.availableOn.toLocaleString()}.
              </p>
