@@ -210,9 +210,11 @@ export class EvaluationService {
               },
               select: ['id']
             });
+
           const usersToSendEmail = listOfUsers.filter(x => x.user.roles.includes("user"));
+          
           try {
-            usersToSendEmail.map(x => {
+/*             usersToSendEmail.map(x => {
               const mail = {
                 to: [x.user.email],
                 subject: 'Evaluación publicada',
@@ -223,7 +225,25 @@ export class EvaluationService {
                </p>
                <h5>Atentamente, <br>
                  El equipo de EduChain</h5>`
-              };
+              }; */
+
+            //const usersToSendEmail=listOfUsers.filter(x=>x.user.roles.includes("user"));
+
+            usersToSendEmail.map(x=>{
+            const mail = {
+              to: [x.user.email],
+              from: 'lhm2001@hotmail.com',
+              templateId:'d-07316ea28bc04f8ca9e8c1ff747b7cff',
+              dynamicTemplateData:{
+                subject:'Test',
+                user:x.user.name,
+                lastname:x.user.lastName,
+                evaluation:evaluation.name,
+                course:evaluation.courses.name,
+                date:evaluation.availableOn.toLocaleString()
+              }
+          };
+
               this.sendgridService.send(mail);
             })
           } catch (error) {

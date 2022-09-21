@@ -9,12 +9,15 @@ export class MailController {
 
     @Post('send')
     async sendEmail() {
+
         const mail = {
-            to: ['lhm2001@hotmail.com'],
-            subject: 'Hello World',
-            from: 'u20181g907@upc.edu.pe',
-            text: 'Hello World',
-            html: '<h1>Hello World</h1>'
+            to: ['ldlmhm@gmail.com'],
+            from: 'lhm2001@hotmail.com',
+            templateId:'d-07316ea28bc04f8ca9e8c1ff747b7cff',
+            dynamicTemplateData:{
+              subject:'Test',
+              user:"user"
+            }
         };
 
        return await this.sendgridService.send(mail);
