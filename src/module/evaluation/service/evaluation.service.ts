@@ -55,17 +55,29 @@ export class EvaluationService {
       });
     const teachersToSendEmail = listOfUsers.filter(x => x.user.roles.includes(TEACHER_ROLE));
     teachersToSendEmail.map(x => {
+      // const mail = {
+      //   to: [x.user.email],
+      //   subject: 'Reclamo de evaluación',
+      //   from: 'u20181g907@upc.edu.pe',
+      //   text:"Reclamo de evaluación",
+      //   html: `<h1>Hola, ${x.user.name} ${x.user.lastName}!</h1><br><p>
+      //          El motivo de este correo es para informarle que el alumno: ${user.name} ${user.lastName} ha generado un ticket de reclamo para la evaluación ${evaluation.name} en el curso de ${evaluation.courses.name}.
+      //        </p>
+      //        <h5>Atentamente, <br>
+      //          El equipo de EduChain</h5>`
+      // };
       const mail = {
         to: [x.user.email],
-        subject: 'Reclamo de evaluación',
-        from: 'u20181g907@upc.edu.pe',
-        text:"Reclamo de evaluación",
-        html: `<h1>Hola, ${x.user.name} ${x.user.lastName}!</h1><br><p>
-               El motivo de este correo es para informarle que el alumno: ${user.name} ${user.lastName} ha generado un ticket de reclamo para la evaluación ${evaluation.name} en el curso de ${evaluation.courses.name}.
-             </p>
-             <h5>Atentamente, <br>
-               El equipo de EduChain</h5>`
-      };
+        from: 'lhm2001@hotmail.com',
+        templateId:'d-07316ea28bc04f8ca9e8c1ff747b7cff',
+        dynamicTemplateData:{
+          subject:'Reclamo de evaluación',
+          user:x.user.name,
+          lastname:x.user.lastName,
+          evaluation:evaluation.name,
+          course:evaluation.courses.name,
+          date:evaluation.availableOn.toLocaleString()
+        }}
       this.sendgridService.send(mail);
     });
 
