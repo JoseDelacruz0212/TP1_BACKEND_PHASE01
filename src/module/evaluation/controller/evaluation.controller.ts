@@ -55,7 +55,7 @@ export class EvaluationController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post('/generateRequest')
-  async generateRequest (@Body() evaluationId: string, @userDecorator() user: User) {
+  async generateRequest (@Param() evaluationId: string, @userDecorator() user: User) {
     return this.evaluationService.generateRequest(evaluationId, user);
   }
 
