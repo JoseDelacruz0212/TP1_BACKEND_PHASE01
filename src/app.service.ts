@@ -37,20 +37,25 @@ export class AppService {
         
       });
   }
+  addMinutes(numOfMinutes, date = new Date()) {
+    date.setMinutes(date.getMinutes() + numOfMinutes);
+    return date;
+  }
   @Cron(CronExpression.EVERY_MINUTE)
   async evaluationEndTime(){
     var moment = require('moment');
-    var changeEndEvaluation = moment().toDate();
+    var changeEndEvaluation = moment().format('YYYY-MM-DD HH:mm:ss')
 
     const listOfEvaluations = await this.repository.find(
       {
         where: {
-          isDeleted:false
+          isDeleted:false,
+          status:2
         }
       });
       listOfEvaluations.map(async x=>{
-        const timeNow=x.availableOn.getDate()+x.duration;
-        if(x.status==2 && (timeNow==changeEndEvaluation)){
+        const timeNow=this.addMinutes(x.duration,x.availableOn);
+        if(moment(changeEndEvaluation).isAfter(timeNow)){
           x.status=3;
           await this.repository.update(x.id,x);
         }
