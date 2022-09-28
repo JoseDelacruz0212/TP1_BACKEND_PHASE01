@@ -55,30 +55,24 @@ export class EvaluationService {
       });
     const teachersToSendEmail = listOfUsers.filter(x => x.user.roles.includes(TEACHER_ROLE));
     teachersToSendEmail.map(x => {
-      // const mail = {
-      //   to: [x.user.email],
-      //   subject: 'Reclamo de evaluación',
-      //   from: 'u20181g907@upc.edu.pe',
-      //   text:"Reclamo de evaluación",
-      //   html: `<h1>Hola, ${x.user.name} ${x.user.lastName}!</h1><br><p>
-      //          El motivo de este correo es para informarle que el alumno: ${user.name} ${user.lastName} ha generado un ticket de reclamo para la evaluación ${evaluation.name} en el curso de ${evaluation.courses.name}.
-      //        </p>
-      //        <h5>Atentamente, <br>
-      //          El equipo de EduChain</h5>`
-      // };
-      const mail = {
-        to: [x.user.email],
-        from: 'lhm2001@hotmail.com',
-        templateId:'d-07316ea28bc04f8ca9e8c1ff747b7cff',
-        dynamicTemplateData:{
-          subject:'Reclamo de evaluación',
-          user:x.user.name,
-          lastname:x.user.lastName,
-          evaluation:evaluation.name,
-          course:evaluation.courses.name,
-          date:evaluation.availableOn.toLocaleString()
-        }}
-      this.sendgridService.send(mail);
+      try{
+        const mail = {
+          to: [x.user.email],
+          from: 'no-reply-educhain@educhainapp.com',
+          templateId:'d-0b42018e97b14c9fa6b8477b16b9b102',
+          dynamicTemplateData:{
+            subject:'Solicitud de Reclamo',
+            user:x.user.name,
+            lastname:x.user.lastName,
+            userName:`${user.name} ${user.lastName}`,
+            evaluation:evaluation.name,
+            course:evaluation.courses.name
+          }}
+        this.sendgridService.send(mail);
+      }catch{
+        console.log("error en el envío");
+      }
+    
     });
 
   }
@@ -226,33 +220,20 @@ export class EvaluationService {
           const usersToSendEmail = listOfUsers.filter(x => x.user.roles.includes("user"));
           
           try {
-/*             usersToSendEmail.map(x => {
-              const mail = {
-                to: [x.user.email],
-                subject: 'Evaluación publicada',
-                from: 'u20181g907@upc.edu.pe',
-                text:"Evaluación publicada",
-                html: `<h1>Hola, ${x.user.name} ${x.user.lastName}!</h1><br><p>
-                 El motivo de este correo es para informarle que se ha publicado una nueva evaluación ${evaluation.name} en el curso de ${evaluation.courses.name} con la fecha de disponibilidad:${evaluation.availableOn.toLocaleString()}.
-               </p>
-               <h5>Atentamente, <br>
-                 El equipo de EduChain</h5>`
-              }; */
-
-            //const usersToSendEmail=listOfUsers.filter(x=>x.user.roles.includes("user"));
-
             usersToSendEmail.map(x=>{
+            var time=evaluation.availableOn;
+            time.setHours(time.getHours()-5);
             const mail = {
               to: [x.user.email],
-              from: 'lhm2001@hotmail.com',
-              templateId:'d-07316ea28bc04f8ca9e8c1ff747b7cff',
+              from: 'no-reply-educhain@educhaiapp.com',
+              templateId:'d-273f388eb26746889bbe46b30973699e',
               dynamicTemplateData:{
-                subject:'Test',
+                subject:'Evaluación Publicada',
                 user:x.user.name,
                 lastname:x.user.lastName,
                 evaluation:evaluation.name,
                 course:evaluation.courses.name,
-                date:evaluation.availableOn.toLocaleString()
+                date:time.toLocaleString()
               }
           };
 
