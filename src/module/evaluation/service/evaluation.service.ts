@@ -224,16 +224,14 @@ export class EvaluationService {
               },
               select: ['id']
             });
-
           const usersToSendEmail = listOfUsers.filter(x => x.user.roles.includes("user"));
-
           try {
             usersToSendEmail.map(x => {
               var time = evaluation.availableOn;
               time.setHours(time.getHours() - 5);
               const mail = {
                 to: [x.user.email],
-                from: 'no-reply-educhain@educhaiapp.com',
+                from: 'no-reply-educhain@educhainapp.com',
                 templateId: 'd-273f388eb26746889bbe46b30973699e',
                 dynamicTemplateData: {
                   subject: 'Evaluación Publicada',
