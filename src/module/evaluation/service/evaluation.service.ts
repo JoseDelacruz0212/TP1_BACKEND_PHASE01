@@ -45,7 +45,8 @@ export class EvaluationService {
     const evaluation = await this.repository.findOne(
       {
         where: {
-          id:generateRequest.evaluationId
+          id:generateRequest.evaluationId,
+          isDeleted:false
         }
       });
     if (!evaluation) {

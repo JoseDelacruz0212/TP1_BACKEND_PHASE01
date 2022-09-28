@@ -55,7 +55,7 @@ export class AppService {
       });
       listOfEvaluations.map(async x=>{
         const timeNow=this.addMinutes(x.duration,x.availableOn);
-        if(moment(changeEndEvaluation).isAfter(timeNow)){
+        if(moment(changeEndEvaluation).isSameOrAfter(timeNow)){
           x.status=3;
           await this.repository.update(x.id,x);
         }
