@@ -5,6 +5,7 @@ import { User } from 'src/entity/user.entity';
 import { JwtAuthGuard } from 'src/module/auth/guards/jwt-auth.guard';
 import { CreateEvaluationDto } from '../dto/create-evaluation.dto';
 import { GeneratePoints } from '../dto/generate-points.dto';
+import { GenerateRequest } from '../dto/generate-request.dto';
 import { UpdateEvaluationDto } from '../dto/update-evaluation.dto';
 import { EvaluationService } from '../service/evaluation.service';
 @ApiTags('evaluation')
@@ -55,8 +56,8 @@ export class EvaluationController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post('/generateRequest')
-  async generateRequest (@Param() evaluationId: string, @userDecorator() user: User) {
-    return this.evaluationService.generateRequest(evaluationId, user);
+  async generateRequest (@Body() generateRequest: GenerateRequest, @userDecorator() user: User) {
+    return this.evaluationService.generateRequest(generateRequest, user);
   }
 
   @UseGuards(JwtAuthGuard)

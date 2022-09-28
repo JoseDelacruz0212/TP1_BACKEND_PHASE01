@@ -22,6 +22,7 @@ import { CreateUserEvaluationDto } from '../../user-evaluation/dto/create-user-e
 import { UserCourse } from 'src/entity/user-course.entity';
 import { MailService } from 'src/module/mail/service/mail.service';
 import * as SendGrid from '@sendgrid/mail';
+import { GenerateRequest } from '../dto/generate-request.dto';
 
 
 
@@ -40,8 +41,13 @@ export class EvaluationService {
 
   ) { }
 
-  async generateRequest(evaluationId: string, user: User) {
-    const evaluation = await this.repository.findOne(evaluationId);
+  async generateRequest(generateRequest: GenerateRequest, user: User) {
+    const evaluation = await this.repository.findOne(
+      {
+        where: {
+          id:generateRequest.evaluationId
+        }
+      });
     if (!evaluation) {
       throw new NotFoundException();
     }
@@ -55,24 +61,25 @@ export class EvaluationService {
       });
     const teachersToSendEmail = listOfUsers.filter(x => x.user.roles.includes(TEACHER_ROLE));
     teachersToSendEmail.map(x => {
-      try{
+      try {
         const mail = {
           to: [x.user.email],
           from: 'no-reply-educhain@educhainapp.com',
-          templateId:'d-0b42018e97b14c9fa6b8477b16b9b102',
-          dynamicTemplateData:{
-            subject:'Solicitud de Reclamo',
-            user:x.user.name,
-            lastname:x.user.lastName,
-            userName:`${user.name} ${user.lastName}`,
-            evaluation:evaluation.name,
-            course:evaluation.courses.name
-          }}
+          templateId: 'd-0b42018e97b14c9fa6b8477b16b9b102',
+          dynamicTemplateData: {
+            subject: 'Solicitud de Reclamo',
+            user: x.user.name,
+            lastname: x.user.lastName,
+            userName: `${user.name} ${user.lastName}`,
+            evaluation: evaluation.name,
+            course: evaluation.courses.name
+          }
+        }
         this.sendgridService.send(mail);
-      }catch{
+      } catch {
         console.log("error en el envío");
       }
-    
+
     });
 
   }
@@ -218,29 +225,29 @@ export class EvaluationService {
             });
 
           const usersToSendEmail = listOfUsers.filter(x => x.user.roles.includes("user"));
-          
+
           try {
-            usersToSendEmail.map(x=>{
-            var time=evaluation.availableOn;
-            time.setHours(time.getHours()-5);
-            const mail = {
-              to: [x.user.email],
-              from: 'no-reply-educhain@educhaiapp.com',
-              templateId:'d-273f388eb26746889bbe46b30973699e',
-              dynamicTemplateData:{
-                subject:'Evaluación Publicada',
-                user:x.user.name,
-                lastname:x.user.lastName,
-                evaluation:evaluation.name,
-                course:evaluation.courses.name,
-                date:time.toLocaleString()
-              }
-          };
+            usersToSendEmail.map(x => {
+              var time = evaluation.availableOn;
+              time.setHours(time.getHours() - 5);
+              const mail = {
+                to: [x.user.email],
+                from: 'no-reply-educhain@educhaiapp.com',
+                templateId: 'd-273f388eb26746889bbe46b30973699e',
+                dynamicTemplateData: {
+                  subject: 'Evaluación Publicada',
+                  user: x.user.name,
+                  lastname: x.user.lastName,
+                  evaluation: evaluation.name,
+                  course: evaluation.courses.name,
+                  date: time.toLocaleString()
+                }
+              };
 
               this.sendgridService.send(mail);
             })
           } catch (error) {
-            console.log("error",error);
+            console.log("error", error);
           }
         }
 
